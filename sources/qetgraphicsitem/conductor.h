@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -164,7 +164,7 @@ class Conductor : public QGraphicsObject
 				QGraphicsItem *watched, QEvent *event) override;
 
 	private:
-		void adjusteHandlerPos();
+		void adjustHandlerPos();
 		
 		void handlerMousePressEvent(
 				QetGraphicsHandlerItem *qghi,
@@ -232,7 +232,7 @@ class Conductor : public QGraphicsObject
 		static QPointF movePointIntoPolygon(const QPointF &, const QPainterPath &);
 };
 
-Conductor * longuestConductorInPotential (Conductor *conductor, bool all_diagram = false);
+Conductor * longestConductorInPotential (Conductor *conductor, bool all_diagram = false);
 QList <Conductor *> relatedConductors (const Conductor *conductor);
 
 

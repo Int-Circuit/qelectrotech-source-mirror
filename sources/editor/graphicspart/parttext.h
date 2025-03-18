@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -61,7 +61,9 @@ class PartText : public QGraphicsTextItem, public CustomElementPart {
 		QString xmlName() const override { return(QString("text")); }
 		void fromXml(const QDomElement &) override;
 		const QDomElement toXml(QDomDocument &) const override;
-		void setRotation(qreal angle) {(QGraphicsObject::setRotation(QET::correctAngle(angle)));}
+		void setRotation(qreal angle);
+		void mirror();
+		void flip();
 		bool isUseless() const override;
 		QRectF sceneGeometricRect() const override;
 		void startUserTransformation(const QRectF &) override;
@@ -100,6 +102,6 @@ class PartText : public QGraphicsTextItem, public CustomElementPart {
 		QPointF saved_point_;
 		qreal saved_font_size_;
 		QGraphicsItem *decorator_;
-		QPointF m_origine_pos;
+		QPointF m_origin_pos;
 };
 #endif

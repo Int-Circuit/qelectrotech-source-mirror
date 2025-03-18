@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ PartDynamicTextField::PartDynamicTextField(QETElementEditor *editor, QGraphicsIt
 	setDefaultTextColor(Qt::black);
 	setFont(QETApp::dynamicTextsItemFont());
 	QSettings settings;
-	setRotation(settings.value("diagrameditor/dynamic_text_rotation", 0).toInt());
+	QGraphicsObject::setRotation(QET::correctAngle(settings.value("diagrameditor/dynamic_text_rotation", 0).toInt()));
 	setTextWidth(settings.value("diagrameditor/dynamic_text_width", -1).toInt());
 	setText("_");
 	setTextFrom(DynamicElementTextItem::UserText);
@@ -58,6 +58,42 @@ QString PartDynamicTextField::name() const
 QString PartDynamicTextField::xmlName() const
 {
 	return QString("dynamic_text");
+}
+
+
+
+/**
+	Redefines setRotation
+	@param angle
+*/
+void PartDynamicTextField::setRotation(qreal angle) {
+	qreal diffAngle = qRound((angle - rotation()) * 100.0) / 100.0;
+	QGraphicsObject::setRotation(QET::correctAngle(angle, true));
+	setPos(QTransform().rotate(diffAngle).map(pos()));
+}
+
+void PartDynamicTextField::mirror() {
+	// at first: rotate the text:
+	QGraphicsObject::setRotation(QET::correctAngle(360-rotation(), true));
+	// then see, where we need to re-position depending on the angle!
+	qreal rot = qRound(QET::correctAngle(rotation(), true));
+	qreal c = qCos(qDegreesToRadians(rot));
+	qreal s = qSin(qDegreesToRadians(rot));
+	qreal x = (-1) * pos().x() - c * boundingRect().width();
+	qreal y = pos().y() - s * boundingRect().width();
+	setPos(x, y);
+}
+
+void PartDynamicTextField::flip() {
+	// at first: rotate the text:
+	QGraphicsObject::setRotation(QET::correctAngle(360-rotation(), true));
+	// then see, where we need to re-position depending on the angle!
+	qreal rot = qRound(QET::correctAngle(rotation(), true));
+	qreal c = qCos(qDegreesToRadians(rot));
+	qreal s = qSin(qDegreesToRadians(rot));
+	qreal x = pos().x() + s * boundingRect().height();
+	qreal y = (-1) * pos().y() - c * boundingRect().height();
+	setPos(x, y);
 }
 
 /**
@@ -97,10 +133,14 @@ const QDomElement PartDynamicTextField::toXml(QDomDocument &dom_doc) const
 {
 	QDomElement root_element = dom_doc.createElement(xmlName());
 
-	root_element.setAttribute("x", QString::number(pos().x()));
-	root_element.setAttribute("y", QString::number(pos().y()));
+	qreal x   = (qRound(pos().x()  * 100.0) / 100.0);
+	qreal y   = (qRound(pos().y()  * 100.0) / 100.0);
+	qreal rot = (qRound(rotation() *  10.0) /  10.0);
+
+	root_element.setAttribute("x", QString::number(x));
+	root_element.setAttribute("y", QString::number(y));
 	root_element.setAttribute("z", QString::number(zValue()));
-	root_element.setAttribute("rotation", QString::number(QET::correctAngle(rotation())));
+	root_element.setAttribute("rotation", QString::number(QET::correctAngle(rot)));
 	root_element.setAttribute("font", font().toString());
 	root_element.setAttribute("uuid", m_uuid.toString());
 	root_element.setAttribute("frame", m_frame? "true" : "false");
@@ -168,7 +208,7 @@ void PartDynamicTextField::fromXml(const QDomElement &dom_elmt) {
 		dom_elmt.attribute("y", QString::number(0)).toDouble()
 	);
 	setZValue(dom_elmt.attribute("z", QString::number(zValue())).toDouble());
-	QGraphicsTextItem::setRotation(dom_elmt.attribute("rotation", QString::number(0)).toDouble());
+	QGraphicsObject::setRotation(QET::correctAngle(dom_elmt.attribute("rotation", QString::number(0)).toDouble()));
 	setKeepVisualRotation(dom_elmt.attribute("keep_visual_rotation", "true") == "true"? true : false);
 
 	if (dom_elmt.hasAttribute("font")) {
@@ -177,9 +217,7 @@ void PartDynamicTextField::fromXml(const QDomElement &dom_elmt) {
 		setFont(font_);
 	}
 	else if (dom_elmt.hasAttribute("font_size")) {
-#if TODO_LIST
-#pragma message("@TODO plc-user: remove again, when elements are converted!")
-#endif
+		// to support font-size from old 'input'
 		setFont(QETApp::dynamicTextsItemFont(dom_elmt.attribute("font_size", QString::number(9)).toInt()));
 	}
 	else {
@@ -253,7 +291,7 @@ void PartDynamicTextField::fromTextFieldXml(const QDomElement &dom_element)
 		setInfoName(dom_element.attribute("tagg", "label"));
 	}
 
-	QGraphicsTextItem::setRotation(dom_element.attribute("rotation", "0").toDouble());
+	QGraphicsObject::setRotation(QET::correctAngle(dom_element.attribute("rotation", "0").toDouble()));
 
 	//the origin transformation point of PartDynamicTextField is the top left corner, no matter the font size
 	//The origin transformation point of PartTextField is the middle of left edge, and so by definition, change with the size of the font
@@ -458,7 +496,7 @@ bool PartDynamicTextField::keepVisualRotation() const {
 */
 void PartDynamicTextField::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 	if((event -> buttons() & Qt::LeftButton) && (flags() & QGraphicsItem::ItemIsMovable)) {
-		QPointF pos = event -> scenePos() + (m_origine_pos - event -> buttonDownScenePos(Qt::LeftButton));
+		QPointF pos = event -> scenePos() + (m_origin_pos - event -> buttonDownScenePos(Qt::LeftButton));
 		event -> modifiers() == Qt::ControlModifier ? setPos(pos) : setPos(elementScene() -> snapToGrid(pos));
 	}
 	else
@@ -471,7 +509,7 @@ void PartDynamicTextField::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 */
 void PartDynamicTextField::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 	if(event -> button() == Qt::LeftButton)
-		m_origine_pos = this -> pos();
+		m_origin_pos = this -> pos();
 
 	QGraphicsObject::mousePressEvent(event);
 }
@@ -483,9 +521,9 @@ void PartDynamicTextField::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void PartDynamicTextField::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 	if((event -> button() & Qt::LeftButton) &&
 		(flags() & QGraphicsItem::ItemIsMovable) &&
-		m_origine_pos != pos()) {
+		m_origin_pos != pos()) {
 			QPropertyUndoCommand *undo =\
-				new QPropertyUndoCommand(this, "pos", QVariant(m_origine_pos), QVariant(pos()));
+				new QPropertyUndoCommand(this, "pos", QVariant(m_origin_pos), QVariant(pos()));
 			undo -> setText(tr("Déplacer un champ texte"));
 			undo -> enableAnimation();
 			elementScene() -> undoStack().push(undo);

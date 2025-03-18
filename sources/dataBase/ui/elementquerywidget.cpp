@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -171,7 +171,7 @@ void ElementQueryWidget::setQuery(const QString &query)
 				if (ui->m_simple_cb->isChecked()) {
 					++c;
 				}
-				ui->m_terminal_cb->setChecked  (str_type.contains(ElementData::typeToString(ElementData::Terminale)) ? true : false);
+				ui->m_terminal_cb->setChecked  (str_type.contains(ElementData::typeToString(ElementData::Terminal)) ? true : false);
 				if (ui->m_terminal_cb->isChecked()) {
 					++c;
 				}
@@ -340,7 +340,7 @@ QString ElementQueryWidget::queryStr() const
 	bool b = false;
 	if (ui->m_terminal_cb->isChecked()) {
 		if (b) where +=" OR";
-		where +=  QStringLiteral(" element_type = '") += ElementData::typeToString(ElementData::Terminale) += "'";
+		where +=  QStringLiteral(" element_type = '") += ElementData::typeToString(ElementData::Terminal) += "'";
 		b = true;
 	}
 	if (ui->m_thumbnail_cb->isChecked()) {

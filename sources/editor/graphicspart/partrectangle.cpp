@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -54,14 +54,7 @@ void PartRectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 	Q_UNUSED(widget);
 	applyStylesToQPainter(*painter);
 	QPen t = painter -> pen();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	t.setCosmetic(options && options -> levelOfDetail < 1.0);
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
 	t.setCosmetic(options && options -> levelOfDetailFromTransform(painter->worldTransform()) < 1.0);
-#endif
 	if (isSelected())
 		t.setColor(Qt::red);
 
@@ -91,23 +84,19 @@ const QDomElement PartRectangle::toXml(QDomDocument &xml_document) const
 {
 	QDomElement xml_element = xml_document.createElement("rect");
 	QPointF top_left(sceneTopLeft());
-	xml_element.setAttribute("x", QString("%1").arg(top_left.x()));
-	xml_element.setAttribute("y", QString("%1").arg(top_left.y()));
-	xml_element.setAttribute("width",  QString("%1").arg(m_rect.width()));
-	xml_element.setAttribute("height", QString("%1").arg(m_rect.height()));
+	qreal x  = (qRound(top_left.x() * 100.0) / 100.0);
+	qreal y  = (qRound(top_left.y() * 100.0) / 100.0);
+	qreal w  = (qRound(m_rect.width() * 100.0) / 100.0);
+	qreal h  = (qRound(m_rect.height() * 100.0) / 100.0);
+	qreal rx = (qRound(m_xRadius * 100.0) / 100.0);
+	qreal ry = (qRound(m_yRadius * 100.0) / 100.0);
 
-	QRectF rect = m_rect.normalized();
-	qreal x = m_xRadius;
-	if (x > rect.width()/2) {
-		x = rect.width()/2;
-	}
-	qreal y = m_yRadius;
-	if (y > rect.height()/2) {
-		y = rect.height()/2;
-	}
-
-	xml_element.setAttribute("rx", QString::number(m_xRadius));
-	xml_element.setAttribute("ry", QString::number(m_yRadius));
+	xml_element.setAttribute("x", QString::number(x));
+	xml_element.setAttribute("y", QString::number(y));
+	xml_element.setAttribute("width",  QString::number(w));
+	xml_element.setAttribute("height", QString::number(h));
+	xml_element.setAttribute("rx", QString::number(rx));
+	xml_element.setAttribute("ry", QString::number(ry));
 
 	stylesToXml(xml_element);
 	return(xml_element);
@@ -151,7 +140,7 @@ void PartRectangle::setRect(const QRectF &rect)
 	if (rect == m_rect) return;
 	prepareGeometryChange();
 	m_rect = rect;
-	adjusteHandlerPos();
+	adjustHandlerPos();
 	emit rectChanged();
 }
 
@@ -159,7 +148,7 @@ void PartRectangle::setXRadius(qreal X)
 {
 	m_xRadius = X;
 	update();
-	adjusteHandlerPos();
+	adjustHandlerPos();
 	emit XRadiusChanged();
 }
 
@@ -167,21 +156,65 @@ void PartRectangle::setYRadius(qreal Y)
 {
 	m_yRadius = Y;
 	update();
-	adjusteHandlerPos();
+	adjustHandlerPos();
 	emit YRadiusChanged();
 }
 
 void PartRectangle::setRotation(qreal angle) {
+	qreal diffAngle = qRound((angle - rotation()) * 100.0) / 100.0;
+	m_rot = QET::correctAngle(angle, true);
+	auto p1 = mapToScene(m_rect.x(),m_rect.y());
+	qreal width  = m_rect.height();
+	qreal height = m_rect.width();
+	qreal x; qreal y;
+	if (diffAngle > 0) {
+		x = (p1.y() + m_rect.height()) * (-1);
+		y = p1.x();
+	} else {
+		x = p1.y();
+		y = (p1.x() + m_rect.width()) * (-1);
+	}
+	p1 = mapFromScene(x, y);
+	m_rect = QRectF(p1.x(), p1.y(), width, height);
+	std::swap (m_xRadius, m_yRadius);
 
-	QTransform rotation = QTransform().rotate(angle-m_rot);
-	m_rot=angle;
-
-	setRect(rotation.mapRect(m_rect));
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
 }
 
 qreal PartRectangle::rotation() const {
-	return m_rot;
+	return qRound(m_rot * 100.0) / 100.0;
 }
+
+void PartRectangle::flip() {
+	auto height = m_rect.height();
+	auto p1 = mapToScene(m_rect.x(),m_rect.y());
+	qreal x = p1.x();
+	qreal y = ((-1.0) * p1.y()) - height;
+	p1 = mapFromScene(x, y);
+	m_rect.setX(p1.x());
+	m_rect.setY(p1.y());
+	m_rect.setHeight(height);
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
+}
+
+void PartRectangle::mirror() {
+	auto width = m_rect.width();
+	auto p1 = mapToScene(m_rect.x(),m_rect.y());
+	qreal x = ((-1.0) * p1.x()) - width;
+	qreal y = p1.y();
+	p1 = mapFromScene(x, y);
+	m_rect.setX(p1.x());
+	m_rect.setY(p1.y());
+	m_rect.setWidth(width);
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
+}
+
 
 /**
 	@brief PartRectangle::sceneGeometricRect
@@ -307,7 +340,7 @@ QVariant PartRectangle::itemChange(QGraphicsItem::GraphicsItemChange change, con
 {
 	if (change == ItemPositionHasChanged)
 	{
-		adjusteHandlerPos();
+		adjustHandlerPos();
 	}
 	else if (change == ItemSceneChange)
 	{
@@ -391,9 +424,9 @@ void PartRectangle::switchResizeMode()
 }
 
 /**
-	@brief PartRectangle::adjusteHandlerPos
+	@brief PartRectangle::adjustHandlerPos
 */
-void PartRectangle::adjusteHandlerPos()
+void PartRectangle::adjustHandlerPos()
 {
 	if (m_handler_vector.isEmpty()) {
 		return;
@@ -473,7 +506,7 @@ void PartRectangle::handlerMouseMoveEvent(QetGraphicsHandlerItem *qghi, QGraphic
 		}
 	}
 
-	adjusteHandlerPos();
+	adjustHandlerPos();
 }
 
 void PartRectangle::handlerMouseReleaseEvent(QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event)

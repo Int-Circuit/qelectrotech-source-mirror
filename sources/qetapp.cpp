@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -62,6 +62,10 @@ QString QETApp::common_tbt_dir_ = QString();
 QString QETApp::config_dir = QString();
 #endif
 
+#ifdef QET_ALLOW_OVERRIDE_DD_OPTION
+QString QETApp::data_dir = QString();
+#endif
+
 QString QETApp::lang_dir = QString();
 TitleBlockTemplatesFilesCollection *QETApp::m_common_tbt_collection;
 TitleBlockTemplatesFilesCollection *QETApp::m_company_tbt_collection;
@@ -121,7 +125,7 @@ QETApp::QETApp() :
 		tr("Chargement... Initialisation du cache des collections d'éléments",
 		   "splash screen caption"));
 	if (!collections_cache_) {
-	QString cache_path = QETApp::configDir() + "/elements_cache.sqlite";
+	QString cache_path = QETApp::dataDir() + "/elements_cache.sqlite";
 
 		collections_cache_ = new ElementsCollectionCache(cache_path, this);
 		collections_cache_->setLocale(langFromSetting());
@@ -620,7 +624,7 @@ QString QETApp::customElementsDir()
 			}
 		}
 
-		m_custom_element_dir = configDir() + "elements/";
+		m_custom_element_dir = dataDir() + "/elements/";
 		return m_custom_element_dir;
 	}
 }
@@ -657,7 +661,7 @@ QString QETApp::companyElementsDir()
 			}
 		}
 
-		m_company_element_dir = configDir() + "elements-company/";
+		m_company_element_dir = dataDir() + "/elements-company/";
 		return m_company_element_dir;
 	}
 }
@@ -780,7 +784,7 @@ QString QETApp::companyTitleBlockTemplatesDir()
 		return m_user_company_tbt_dir;
 	}
 
-	return(configDir() + "titleblocks-company/");
+	return(dataDir() + "/titleblocks-company/");
 }
 
 /**
@@ -813,7 +817,7 @@ QString QETApp::customTitleBlockTemplatesDir()
 		return m_user_custom_tbt_dir;
 	}
 
-	return(configDir() + "titleblocks/");
+	return(dataDir() + "/titleblocks/");
 }
 
 /**
@@ -821,17 +825,17 @@ QString QETApp::customTitleBlockTemplatesDir()
 	Return the QET configuration folder, i.e. the path to the folder in
 	which QET will read configuration and customization information
 	specific to the current user. This file is generally
-	C:\\Documents And Settings\\user\\Application Data\ qet
+	C:/Users/<USER>/AppData/Local/<APPNAME>
 	on Windows and
-	~/.qet
+	~/.config/<APPNAME>
 	under UNIX-like systems.
 	\~French Renvoie le dossier de configuration de QET,
 	c-a-d le chemin du dossier dans lequel QET lira les informations
 	de configuration et de personnalisation propres a l'utilisateur courant.
 	Ce dossier est generalement
-	C:\\Documents And Settings\\utilisateur\\Application Data\\qet
+	C:/Users/<USER>/AppData/Local/<APPNAME>
 	sous Windows et
-	~/.qet
+	~/.config/<APPNAME>
 	sous les systemes type UNIX.
 	\~ @return The path of the QElectroTech configuration folder
 	\~French Le chemin du dossier de configuration de QElectroTech
@@ -841,21 +845,73 @@ QString QETApp::configDir()
 #ifdef QET_ALLOW_OVERRIDE_CD_OPTION
 	if (config_dir != QString()) return(config_dir);
 #endif
-#ifdef Q_OS_WIN32
-	// recupere l'emplacement du dossier Application Data
-	// char *app_data_env = getenv("APPDATA");
-	// QString app_data_str(app_data_env);
-	QProcess * process = new QProcess();
-	QString app_data_str = (process->processEnvironment()).value("APPDATA");
-	// delete app_data_env;
-	delete process;
-	if (app_data_str.isEmpty()) {
-		app_data_str = QDir::homePath() + "/Application Data";
+	QString configdir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+	while (configdir.endsWith('/')) {
+		configdir.remove(configdir.length()-1, 1);
 	}
-	return(app_data_str + "/qet/");
-#else
-	return(QDir::homePath() + "/.qet/");
+	return configdir;
+}
+
+/**
+	@brief QETApp::dataDir
+	Return the QET data folder, i.e. the path to the folder in
+	which QET will save log-files and elements-cache and where
+	to find user-collections and user-titleblocks by default
+	specific to the current user. This directory is generally
+	C:/Users/<USER>/AppData/Roaming/<APPNAME>
+	on Windows and
+	~/.local/share/<APPNAME>
+	under UNIX-like systems.
+	\~ @return The path of the QElectroTech data-folder
+*/
+QString QETApp::dataDir()
+{
+#ifdef QET_ALLOW_OVERRIDE_DD_OPTION
+	if (data_dir != QString()) return(data_dir);
 #endif
+	QString datadir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	while (datadir.endsWith('/')) {
+		datadir.remove(datadir.length()-1, 1);
+	}
+	return datadir;
+}
+
+/**
+	@brief QETApp::documentDir
+	Return the standard-folder where to save users documents
+	This directory is generally
+	C:/Users/<USER>/Documents
+	on Windows and
+	~/Documents
+	under UNIX-like systems.
+	\~ @return The path of users document-folder
+*/
+QString QETApp::documentDir()
+{
+	QString docdir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+	while (docdir.endsWith('/')) {
+		docdir.remove(docdir.length()-1, 1);
+	}
+	return docdir;
+}
+
+/**
+	@brief QETApp::pictureDir
+	Returns the standard-folder of users pictures
+	This directory is generally
+	C:/Users/<USER>/Pictures
+	on Windows and
+	~/Pictures
+	under UNIX-like systems.
+	\~ @return The path of users picture-folder
+*/
+QString QETApp::pictureDir()
+{
+	QString picturedir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+	while (picturedir.endsWith('/')) {
+		picturedir.remove(picturedir.length()-1, 1);
+	}
+	return picturedir;
 }
 
 /**
@@ -1065,7 +1121,32 @@ void QETApp::overrideConfigDir(const QString &new_cd) {
 	QFileInfo new_cd_info(new_cd);
 	if (new_cd_info.isDir()) {
 		config_dir = new_cd_info.absoluteFilePath();
-		if (!config_dir.endsWith("/")) config_dir += "/";
+		// directory entries always without trailing slash
+		while (config_dir.endsWith('/')) {
+			config_dir.remove(config_dir.length()-1, 1);
+		}
+	}
+}
+#endif
+
+
+#ifdef QET_ALLOW_OVERRIDE_DD_OPTION
+/**
+	@brief QETApp::overrideDataDir
+	Redefines the path of the data folder
+	\~French Redefinit le chemin du dossier de data
+	\~ @param new_dd :
+	New path to data folder
+	\~French Nouveau chemin du dossier de data
+*/
+void QETApp::overrideDataDir(const QString &new_dd) {
+	QFileInfo new_dd_info(new_dd);
+	if (new_dd_info.isDir()) {
+		data_dir = new_dd_info.absoluteFilePath();
+		// directory entries always without trailing slash
+		while (data_dir.endsWith('/')) {
+			data_dir.remove(data_dir.length()-1, 1);
+		}
 	}
 }
 #endif
@@ -1179,7 +1260,7 @@ QFont QETApp::diagramTextsFont(qreal size)
 }
 /**
 	@brief QETApp::diagramTextsItemFont
-	the font for to use in independent text item
+	the font to use in independent text items
 	@param size of font
 	@return
 */
@@ -1194,7 +1275,7 @@ QFont QETApp::diagramTextsItemFont(qreal size)
 							   9.0).toDouble();
 	auto diagram_texts_item_weight =
 			static_cast<QFont::Weight>(
-				settings.value("diagramitemweight").toInt());
+				settings.value("diagramitemweight", QFont::Normal).toInt());
 	QString diagram_texts_item_style  = settings.value("diagramitemstyle",
 							   "normal").toString();
 
@@ -1536,7 +1617,7 @@ void QETApp::useSystemPalette(bool use) {
 				"}"
 				);
 	} else {
-		QFile file(configDir() + "style.css");
+		QFile file(configDir() + "/style.css");
 		file.open(QFile::ReadOnly);
 		QString styleSheet = QLatin1String(file.readAll());
 		qApp->setStyleSheet(styleSheet);
@@ -1895,6 +1976,7 @@ QList<QWidget *> QETApp::floatingToolbarsAndDocksForMainWindow(
 	Parse the following arguments:
 	  - --common-elements-dir=
 	  - --config-dir
+	  - --data-dir
 	  - --help
 	  - --version
 	  - -v
@@ -1907,6 +1989,7 @@ QList<QWidget *> QETApp::floatingToolbarsAndDocksForMainWindow(
 	Parse les arguments suivants :
 	  - --common-elements-dir=
 	  - --config-dir
+	  - --data-dir
 	  - --help
 	  - --version
 	  - -v
@@ -1944,6 +2027,11 @@ void QETApp::parseArguments()
 #ifdef QET_ALLOW_OVERRIDE_CD_OPTION
 	if (qet_arguments_.configDirSpecified()) {
 		overrideConfigDir(qet_arguments_.configDir());
+	}
+#endif
+#ifdef QET_ALLOW_OVERRIDE_DD_OPTION
+	if (qet_arguments_.dataDirSpecified()) {
+		overrideDataDir(qet_arguments_.dataDir());
 	}
 #endif
 
@@ -2043,6 +2131,12 @@ void QETApp::initConfiguration()
 	// cree les dossiers de configuration si necessaire
 	QDir config_dir(QETApp::configDir());
 	if (!config_dir.exists()) config_dir.mkpath(QETApp::configDir());
+
+	// we definitely need the dataDir for log files and element cache
+	// Nous avons absolument besoin du répertoire dataDir pour
+	// les fichiers journaux et le cache des éléments.
+	QDir data_dir(QETApp::dataDir());
+	if (!data_dir.exists()) data_dir.mkpath(QETApp::dataDir());
 
 	QDir custom_elements_dir(QETApp::customElementsDir());
 	if (!custom_elements_dir.exists())
@@ -2441,6 +2535,9 @@ void QETApp::printHelp()
 #endif
 #ifdef QET_ALLOW_OVERRIDE_CD_OPTION
 		+ tr("  --config-dir=DIR              Definir le dossier de configuration\n")
+#endif
+#ifdef QET_ALLOW_OVERRIDE_DD_OPTION
+		+ tr("  --data-dir=DIR                Definir le dossier de data\n")
 #endif
 		+ tr("  --lang-dir=DIR                Definir le dossier contenant les fichiers de langue\n")
 	);

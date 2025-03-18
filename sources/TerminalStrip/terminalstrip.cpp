@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -250,7 +250,7 @@ bool TerminalStrip::addTerminal(Element *terminal)
 		}
 	}
 
-	if (terminal->elementData().m_type != ElementData::Terminale) {
+	if (terminal->elementData().m_type != ElementData::Terminal) {
 		return false;
 	}
 

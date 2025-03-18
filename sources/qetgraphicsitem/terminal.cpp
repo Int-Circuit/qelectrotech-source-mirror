@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -37,13 +37,14 @@ const qreal Terminal::Z = 1000;
 /**
 	@brief Terminal::init
 	Methode privee pour initialiser la borne.
+	Private method to initialize the terminal.
 	@param number of terminal
 	@param name of terminal
 	@param hiddenName
 */
 void Terminal::init()
 {
-		//Calcul the docking point of the element
+		//Calculate the docking point of the element
 		//m_pos of d is the docking point of conductor
 	dock_elmt_ = d->m_pos;
 	switch(d->m_orientation) {
@@ -53,7 +54,7 @@ void Terminal::init()
 		case Qet::South: dock_elmt_ += QPointF(0, -Terminal::terminalSize); break;
 	}
 
-		//Calcul the bounding rect
+		//Calculate the bounding rect
 	qreal dcx = d->m_pos.x();
 	qreal dcy = d->m_pos.y();
 	qreal dex = dock_elmt_.x();
@@ -92,17 +93,25 @@ Terminal::~Terminal() {
 	est bien un Element, cette fonction renvoie l'orientation par rapport a
 	la scene de la borne, en tenant compte du fait que l'element ait pu etre
 	pivote. Sinon elle renvoie son sens normal.
+	Used to find out the orientation of the terminal. If the terminal's parent
+	is in fact an Element, this function returns the orientation of the
+	terminal with respect to the scene, taking into account the angle of
+	rotation. scene, taking into account the fact that the element may have
+	been rotated. Otherwise it returns its normal direction.
 	@return L'orientation actuelle de la Terminal.
 */
 Qet::Orientation Terminal::orientation() const
 {
 	if (Element *elt = qgraphicsitem_cast<Element *>(parentItem())) {
 		// orientations actuelle et par defaut de l'element
+		// current and default element orientations
 		int ori_cur = elt -> orientation();
 	if (ori_cur == 0) return(d->m_orientation);
 		else {
 			// calcul l'angle de rotation implique par l'orientation de l'element parent
 			// angle de rotation de la borne sur la scene, divise par 90
+			// calculates the angle of rotation implied by the orientation of the parent
+			// element angle of rotation of the terminal on the scene, divided by 90
 			int angle = ori_cur + d->m_orientation;
 			while (angle >= 4) angle -= 4;
 			return((Qet::Orientation)angle);
@@ -163,47 +172,38 @@ void Terminal::paint(
 		QWidget *)
 {
 	// en dessous d'un certain zoom, les bornes ne sont plus dessinees
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	if (options && options -> levelOfDetail < 0.5) return;
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
+	// below a certain zoom level, the terminals are no longer drawn
 	if (options && options->levelOfDetailFromTransform(painter->worldTransform()) < 0.5)
 		return;
-#endif
 	painter -> save();
 
-	//annulation des renderhints
+	// annulation des renderhints
+	// cancel renderhints
 	painter -> setRenderHint(QPainter::Antialiasing,          false);
 	painter -> setRenderHint(QPainter::TextAntialiasing,      false);
 	painter -> setRenderHint(QPainter::SmoothPixmapTransform, false);
 
 	// on travaille avec les coordonnees de l'element parent
+	// work with the coordinates of the parent element
 	QPointF c = mapFromParent(d->m_pos);
 	QPointF e = mapFromParent(dock_elmt_);
 
 	QPen t;
 	t.setWidthF(1.0);
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	if (options && options -> levelOfDetail < 1.0)
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
 	if (options && options->levelOfDetailFromTransform(painter->worldTransform()) < 1.0)
-#endif
 	{
 		t.setCosmetic(true);
 	}
 
 	// dessin de la borne en rouge
+	// draw the terminal in red
 	t.setColor(Qt::red);
 	painter -> setPen(t);
 	painter -> drawLine(c, e);
 
 	// dessin du point d'amarrage au conducteur en bleu
+	// draw the docking point to the conductor in blue
 	t.setColor(m_hovered_color);
 	painter -> setPen(t);
 	painter -> setBrush(m_hovered_color);
@@ -314,7 +314,7 @@ QLineF Terminal::HelpLine() const
 
 	QLineF line(scene_dock , QPointF());
 
-		//Set te second point of line to the edge of diagram,
+		//Set the second point of line to the edge of diagram,
 		//according with the orientation of this terminal
 	switch (orientation())
 	{
@@ -359,7 +359,7 @@ Terminal* Terminal::alignedWithTerminal() const
 	path.lineTo(line.p2());
 
 	//Get all QGraphicsItem in the alignement of this terminal
-	QList <QGraphicsItem *> qgi_list = diagram() -> items(path);
+	QList<QGraphicsItem *> qgi_list = diagram() -> items(path);
 
 	//Remove all terminals of the parent element
 	foreach (Terminal *t, parent_element_ -> terminals())
@@ -645,7 +645,7 @@ QDomElement Terminal::toXml(QDomDocument &doc) const
 
 	// for backward compatibility
 	qdo.setAttribute("x", QString("%1").arg(dock_elmt_.x()));
-	qdo.setAttribute("y",  QString("%1").arg(dock_elmt_.y()));
+	qdo.setAttribute("y", QString("%1").arg(dock_elmt_.y()));
 	// end for backward compatibility
 
 	qdo.setAttribute("orientation", d->m_orientation);
@@ -695,11 +695,15 @@ bool Terminal::valideXml(QDomElement &terminal)
 
 /**
 	@brief Terminal::fromXml
+	Enables you to find out whether an XML element represents this terminal.
+	Warning, the XML element is not checked
 	Permet de savoir si un element XML represente cette borne. Attention,
 	l'element XML n'est pas verifie
-	@param terminal Le QDomElement a analyser
+	@param terminal Le QDomElement a analyser / QDomElement to check
 	@return true si la borne "se reconnait"
 	(memes coordonnes, meme orientation), false sinon
+	true, if the terminal ‘recognises’ itself (same coordinates,
+	same orientation), false otherwise
 */
 bool Terminal::fromXml(QDomElement &terminal)
 {

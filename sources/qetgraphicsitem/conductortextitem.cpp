@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -90,10 +90,10 @@ bool ConductorTextItem::wasMovedByUser() const
 }
 
 /**
-	@brief ConductorTextItem::wasRotateByUser
+	@brief ConductorTextItem::wasRotatedByUser
 	@return true if text was explicit moved by user else false
 */
-bool ConductorTextItem::wasRotateByUser() const
+bool ConductorTextItem::wasRotatedByUser() const
 {
 	return(rotate_by_user_);
 }

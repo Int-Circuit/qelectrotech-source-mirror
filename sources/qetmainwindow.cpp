@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -115,12 +115,12 @@ void QETMainWindow::initCommonActions()
 	upgrade_M -> setStatusTip(tr("Lance le navigateur par défaut vers le dépot Nightly en ligne de QElectroTech", "status bar tip"));
 
 	connect(upgrade_, &QAction::triggered, [](bool) {
-	QString link = "https://qelectrotech.org/download_windows_QET.html";
+	QString link = "https://qelectrotech.org/download_windows.php";
 	QDesktopServices::openUrl(QUrl(link));
 	});
 
 	connect(upgrade_M, &QAction::triggered, [](bool) {
-	QString link = "https://qelectrotech.org/download_mac_QET.html";
+	QString link = "https://qelectrotech.org/download_mac.php";
 	QDesktopServices::openUrl(QUrl(link));
 	});
 
@@ -151,13 +151,13 @@ void QETMainWindow::initCommonMenus()
 	help_menu_ = new QMenu(tr("&Aide", "window menu"));
 	help_menu_ -> addAction(whatsthis_action_);
 	help_menu_ -> addSeparator();
-	help_menu_ -> addAction(about_qet_);
 	help_menu_ -> addAction(manual_online_);
 	help_menu_ -> addAction(youtube_);
 	help_menu_ -> addAction(upgrade_);
 	help_menu_ -> addAction(upgrade_M);
 	help_menu_ -> addAction(donate_);
 	help_menu_ -> addAction(about_qt_);
+	help_menu_ -> addAction(about_qet_);
 
 #ifdef Q_OS_WIN32
 upgrade_ -> setVisible(true);
@@ -221,7 +221,7 @@ void QETMainWindow::updateFullScreenAction()
 		fullscreen_action_ -> setIcon(QET::Icons::FullScreenEnter);
 		fullscreen_action_ -> setStatusTip(tr("Affiche QElectroTech en mode plein écran", "status bar tip"));
 	}
-	fullscreen_action_ -> setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
+	fullscreen_action_ -> setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_F);
 }
 
 /**

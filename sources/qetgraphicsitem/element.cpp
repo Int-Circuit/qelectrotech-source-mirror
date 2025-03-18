@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -215,31 +215,24 @@ void Element::paint(
 		drawHighlight(painter, options);
 	}
 
-		//Set default pen and brush to QPainter
-		//for avoid a strange bug when the Qt theme is a "dark" theme.
-		//Some part of an element are gray or white instead of black.
-		//This bug seems append only  when the QPainter use drawPicture method.
+		//Set default pen and brush to QPainter to avoid a strange bug when
+		//the Qt theme is a "dark" theme.
+		//Some parts of an element are gray or white instead of black.
+		//This bug seems append only when the QPainter uses drawPicture method.
 		//See bug 175. https://qelectrotech.org/bugtracker/view.php?id=175
 	painter->save();
 	QPen pen;
 	QBrush brush;
 	painter->setPen(pen);
 	painter->setBrush(brush);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	if (options && options -> levelOfDetail < 1.0)
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
-	if (options && options->levelOfDetailFromTransform(painter->worldTransform()) < 1.0)
-#endif
+	if (options && options->levelOfDetailFromTransform(painter->worldTransform()) < 0.5)
 	{
 		painter->drawPicture(0, 0, m_low_zoom_picture);
 	} else {
 		painter->drawPicture(0, 0, m_picture);
 	}
 
-	painter->restore(); //Restorr the QPainter after use drawPicture
+	painter->restore(); //Restore the QPainter after use drawPicture
 
 		//Draw the selection rectangle
 	if ( isSelected() || m_mouse_over ) {
@@ -632,8 +625,8 @@ DynamicElementTextItem *Element::parseDynamicText(
 		const QDomElement &dom_element)
 {
 	DynamicElementTextItem *deti = new DynamicElementTextItem(this);
-		//Because the xml description of a .elmt file is the same as how a dynamic text field is save to xml in a .qet file
-		//wa call fromXml, we just change the tagg name (.elmt = dynamic_text, .qet = dynamic_elmt_text)
+		//Because the xml description of a .elmt file is the same as how a dynamic text field is saved to xml in a .qet file
+		//we call fromXml, we just change the tagg name (.elmt = dynamic_text, .qet = dynamic_elmt_text)
 		//and the uuid (because the uuid, is the uuid of the description and not the uuid of instantiated dynamic text field)
 
 	QDomElement dom(dom_element.cloneNode(true).toElement());
@@ -765,15 +758,10 @@ bool Element::fromXml(QDomElement &e,
 	QList <QDomElement> uuid_list = QET::findInDomElement(e,
 														  QStringLiteral("links_uuids"),
 														  QStringLiteral("link_uuid"));
-	foreach (QDomElement qdo, uuid_list)
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-		tmp_uuids_link << qdo.attribute(QStringLiteral("uuid"));
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
-		qDebug()<<"Help code for QT 6 or later";
-#endif
+	foreach (QDomElement qdo, uuid_list) {
+		tmp_uuids_link << QUuid(qdo.attribute(QStringLiteral("uuid")));
+	}
+
 	//uuid of this element
 	m_uuid = QUuid(e.attribute(QStringLiteral("uuid"), QUuid::createUuid().toString()));
 
@@ -805,13 +793,13 @@ bool Element::fromXml(QDomElement &e,
 	// orientation
 	bool conv_ok;
 	int read_ori = e.attribute(QStringLiteral("orientation")).toInt(&conv_ok);
-	if (!conv_ok || read_ori < 0 || read_ori > 3) {
+	if (!(conv_ok) || (read_ori < 0) || (read_ori > 3)) {
 		read_ori = 0;
 	}
 	setRotation(90*read_ori);
 
 		//Before loading the dynamic text field,
-		//we remove the dynamic text field created from the description of this element, to avoid doublons.
+		//we remove the dynamic text field created from the description of this element, to avoid doubles.
 	for(DynamicElementTextItem *deti : m_dynamic_text_list)
 		delete deti;
 	m_dynamic_text_list.clear();
@@ -845,7 +833,7 @@ bool Element::fromXml(QDomElement &e,
 			   QStringLiteral("elementInformation"));
 
 		//Load override properties (For now, only used when the element is a terminal)
-	if (m_data.m_type == ElementData::Terminale)
+	if (m_data.m_type == ElementData::Terminal)
 	{
 
 		auto elmt_type_list = QETXML::subChild(e, QStringLiteral("properties"), QStringLiteral("element_type"));
@@ -976,7 +964,7 @@ QDomElement Element::toXml(
 	}
 
 		//Save override properties (For now, only used when the element is a terminal)
-	if (m_data.m_type == ElementData::Terminale)
+	if (m_data.m_type == ElementData::Terminal)
 	{
 		QDomElement properties = document.createElement(QStringLiteral("properties"));
 		QDomElement element_type = document.createElement(QStringLiteral("element_type"));
@@ -1166,7 +1154,7 @@ void Element::removeTextGroup(ElementTextItemGroup *group)
 	if(!m_texts_group.contains(group))
 		return;
 
-	const QList <QGraphicsItem *> items_list = group->childItems();
+	const QList<QGraphicsItem *> items_list = group->childItems();
 
 	for(QGraphicsItem *qgi : items_list)
 	{

@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <QString>
 #include <QStringList>
 
+class Conductor;
 class Diagram;
 class Element;
 class ElementsLocation;
@@ -61,12 +62,12 @@ namespace autonum
 	class AssignVariables
 	{
 		public:
-			static QString formulaToLabel (QString formula, sequentialNumbers &seqStruct, Diagram *diagram, const Element *elmt = nullptr);
+			static QString formulaToLabel (QString formula, sequentialNumbers &seqStruct, Diagram *diagram, const Element *elmt = nullptr, const Conductor *cndr = nullptr);
 			static QString replaceVariable (const QString &formula, const DiagramContext &dc);
 			static QString genericXref (const Element *element);
 
 		private:
-			AssignVariables(const QString& formula, const sequentialNumbers& seqStruct , Diagram *diagram, const Element *elmt = nullptr);
+			AssignVariables(const QString& formula, const sequentialNumbers& seqStruct , Diagram *diagram, const Element *elmt = nullptr, const Conductor *cndr = nullptr);
 			void assignTitleBlockVar();
 			void assignProjectVar();
 			void assignSequence();
@@ -76,6 +77,7 @@ namespace autonum
 			QString m_assigned_label;
 			sequentialNumbers m_seq_struct;
 			const Element *m_element = nullptr;
+			const Conductor *m_conductor = nullptr;
 	};
 
 	void setSequentialToList(QStringList &list, NumerotationContext &nc, const QString& type);

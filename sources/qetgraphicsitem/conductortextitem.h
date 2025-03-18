@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ class ConductorTextItem : public DiagramTextItem
 		void fromXml(const QDomElement &) override;
 		int type() const override { return Type; }
 		virtual bool wasMovedByUser() const;
-		virtual bool wasRotateByUser() const;
+		virtual bool wasRotatedByUser() const;
 		virtual void forceMovedByUser(bool);
 		virtual void forceRotateByUser(bool);
 		virtual void setPos(const QPointF &pos);

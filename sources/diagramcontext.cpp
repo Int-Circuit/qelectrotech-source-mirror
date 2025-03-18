@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 	@brief DiagramContext::add
 	Add all value of other to this.
 	If a key already exist, the value is replaced.
-	If a key doesn't exist, she will be added.
+	If a key doesn't exist, it will be added.
 	All other keys of this context, which are not present in other, stay unchanged.
 	@param other
 */
@@ -124,7 +124,7 @@ int DiagramContext::count()
 
 /**
 	@brief DiagramContext::keyMustShow
-	@return the value pairs with key, if key no found, return false
+	@return the value pairs with key, if key not found, return false
 */
 bool DiagramContext::keyMustShow(const QString &key) const
 {
@@ -135,7 +135,7 @@ bool DiagramContext::keyMustShow(const QString &key) const
 
 bool DiagramContext::operator==(const DiagramContext &dc) const
 {
-	return(m_content     == dc.m_content &&
+	return(m_content == dc.m_content &&
 		   m_content_show == dc.m_content_show);
 }
 
@@ -151,10 +151,17 @@ bool DiagramContext::operator!=(const DiagramContext &dc) const
 void DiagramContext::toXml(QDomElement &e, const QString &tag_name) const
 {
 	foreach (QString key, keys()) {
+		if ((tag_name == "elementInformation") &&
+			(m_content[key].toString().trimmed().isEmpty())) {
+			continue;
+		}
 		QDomElement property = e.ownerDocument().createElement(tag_name);
+		// try to sort attributes by removing and re-adding
+		property.removeAttribute("show");
+		property.removeAttribute("name");
+		property.setAttribute("show", m_content_show[key]);
 		property.setAttribute("name", key);
-		property.setAttribute("show",m_content_show[key]);
-		QDomText value = e.ownerDocument().createTextNode(m_content[key].toString());
+		QDomText value = e.ownerDocument().createTextNode(m_content[key].toString().trimmed());
 		property.appendChild(value);
 		e.appendChild(property);
 	}

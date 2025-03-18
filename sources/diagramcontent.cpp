@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ DiagramContent::DiagramContent()
 DiagramContent::DiagramContent(Diagram *diagram, bool selected) :
 	m_selected_items(diagram->selectedItems())
 {
-	QList <QGraphicsItem *> item_list;
+	QList<QGraphicsItem *> item_list;
 	if (selected) {
 		item_list = m_selected_items;
 	} else {

@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -65,7 +65,7 @@ QETDiagramEditor::QETDiagramEditor(const QStringList &files, QWidget *parent) :
 	m_zoom_actions_group       (this),
 	m_select_actions_group     (this),
 	m_file_actions_group       (this),
-	open_dialog_dir            (QStandardPaths::writableLocation(QStandardPaths::DesktopLocation))
+	open_dialog_dir            (QETApp::documentDir())
 {
 		//Trivial property use to set the graphics handler size
 	setProperty("graphics_handler_size", 10);
@@ -264,7 +264,7 @@ void QETDiagramEditor::setUpActions()
 {
 		//Export to another file type (jpeg, dxf etc...)
 	m_export_to_images = new QAction(QET::Icons::DocumentExport,  tr("E&xporter"), this);
-	m_export_to_images->setShortcut(QKeySequence(tr("Ctrl+Shift+X")));
+	m_export_to_images->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_X);
 	m_export_to_images->setStatusTip(tr("Exporte le folio courant dans un autre format", "status bar tip"));
 	connect(m_export_to_images, &QAction::triggered, [this]() {
 		ProjectView *current_project = currentProjectView();
@@ -275,7 +275,7 @@ void QETDiagramEditor::setUpActions()
 
 		//Print
 	m_print = new QAction(QET::Icons::DocumentPrint,   tr("Imprimer"),  this);
-	m_print->setShortcut(QKeySequence(QKeySequence::Print));
+	m_print->setShortcut(QKeySequence::Print);
 	m_print->setStatusTip(tr("Imprime un ou plusieurs folios du projet courant", "status bar tip"));
 	connect(m_print, &QAction::triggered, [this]() {
 		auto project = currentProject();
@@ -296,7 +296,7 @@ void QETDiagramEditor::setUpActions()
 
 		//Quit editor
 	m_quit_editor = new QAction(QET::Icons::ApplicationExit, tr("&Quitter"),  this);
-	m_quit_editor->setShortcut(QKeySequence(tr("Ctrl+Q")));
+	m_quit_editor->setShortcut(Qt::CTRL | Qt::Key_Q);
 	m_quit_editor->setStatusTip(tr("Ferme l'application QElectroTech", "status bar tip"));
 	connect(m_quit_editor, &QAction::triggered, this, &QETDiagramEditor::close);
 
@@ -339,7 +339,7 @@ void QETDiagramEditor::setUpActions()
 
 		//Reset conductor path
 	m_conductor_reset = new QAction(QET::Icons::ConductorSettings,     tr("Réinitialiser les conducteurs"),        this);
-	m_conductor_reset->setShortcut( QKeySequence( tr("Ctrl+K")		) );
+	m_conductor_reset->setShortcut(Qt::CTRL | Qt::Key_K);
 	m_conductor_reset->setStatusTip(tr("Recalcule les chemins des conducteurs sans tenir compte des modifications", "status bar tip"));
 	connect(m_conductor_reset, &QAction::triggered, [this]() {
 		if (DiagramView *dv = currentDiagramView())
@@ -380,7 +380,7 @@ void QETDiagramEditor::setUpActions()
 
 		//Edit current diagram properties
 	m_edit_diagram_properties = new QAction(QET::Icons::DialogInformation, tr("Propriétés du folio"), this);
-	m_edit_diagram_properties->setShortcut( QKeySequence( tr("Ctrl+L")));
+	m_edit_diagram_properties->setShortcut(Qt::CTRL | Qt::Key_L);
 	m_edit_diagram_properties     -> setStatusTip(tr("Édite les propriétés du folio (dimensions, informations du cartouche, propriétés des conducteurs...)", "status bar tip"));
 	connect(m_edit_diagram_properties, &QAction::triggered, [this]() {
 		if (ProjectView *project_view = currentProjectView())
@@ -398,7 +398,7 @@ void QETDiagramEditor::setUpActions()
 
 		//Add new folio to current project
 	m_project_add_diagram = new QAction(QET::Icons::DiagramAdd, tr("Ajouter un folio"), this);
-	m_project_add_diagram->setShortcut(QKeySequence(tr("Ctrl+T")));
+	m_project_add_diagram->setShortcut(Qt::CTRL | Qt::Key_T);
 	connect(m_project_add_diagram, &QAction::triggered, [this]() {
 		if (ProjectView *current_project = currentProjectView()) {
 			current_project->project()->addNewDiagram();
@@ -548,7 +548,7 @@ void QETDiagramEditor::setUpActions()
 	open_file    ->setShortcut(QKeySequence::Open);
 	m_close_file ->setShortcut(QKeySequence::Close);
 	m_save_file    ->setShortcut(QKeySequence::Save);
-	m_save_file_as  ->setShortcut(tr("Ctrl+Shift+S"));
+	m_save_file_as  ->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_S);
 
 	new_file     ->setStatusTip( tr("Crée un nouveau projet", "status bar tip") );
 	open_file    ->setStatusTip( tr("Ouvre un projet existant", "status bar tip") );
@@ -585,17 +585,17 @@ void QETDiagramEditor::setUpActions()
 	connect(&m_row_column_actions_group, &QActionGroup::triggered, this, &QETDiagramEditor::rowColumnGroupTriggered);
 
 		//Selections Actions (related to a selected item)
-	m_delete_selection    = m_selection_actions_group.addAction( QET::Icons::EditDelete,        tr("Supprimer")                 );
+	m_delete_selection     = m_selection_actions_group.addAction( QET::Icons::EditDelete,        tr("Supprimer")                 );
 	m_rotate_selection     = m_selection_actions_group.addAction( QET::Icons::TransformRotate,   tr("Pivoter")                   );
 	m_rotate_texts         = m_selection_actions_group.addAction( QET::Icons::ObjectRotateRight, tr("Orienter les textes")       );
 	m_find_element         = m_selection_actions_group.addAction( QET::Icons::ZoomDraw,          tr("Retrouver dans le panel")   );
 	m_edit_selection       = m_selection_actions_group.addAction( QET::Icons::ElementEdit,       tr("Éditer l'item sélectionné") );
-	m_group_selected_texts = m_selection_actions_group.addAction(QET::Icons::textGroup,       tr("Grouper les textes sélectionnés"));
+	m_group_selected_texts = m_selection_actions_group.addAction( QET::Icons::textGroup,         tr("Grouper les textes sélectionnés"));
 
-	m_delete_selection->setShortcut(QKeySequence::Delete);
-	m_rotate_selection->setShortcut(QKeySequence( tr("SPACE")));
-	m_rotate_texts    ->setShortcut(QKeySequence( tr("Ctrl+SPACE")));
-	m_edit_selection  ->setShortcut(QKeySequence( tr("Ctrl+E")));
+	m_delete_selection->setShortcut(Qt::Key_Delete);
+	m_rotate_selection->setShortcut(Qt::Key_Space);
+	m_rotate_texts    ->setShortcut(Qt::CTRL | Qt::Key_Space);
+	m_edit_selection  ->setShortcut(Qt::CTRL | Qt::Key_E);
 
 	m_delete_selection->setStatusTip( tr("Enlève les éléments sélectionnés du folio", "status bar tip"));
 	m_rotate_selection->setStatusTip( tr("Pivote les éléments et textes sélectionnés", "status bar tip"));
@@ -618,7 +618,7 @@ void QETDiagramEditor::setUpActions()
 
 	select_all    ->setShortcut(QKeySequence::SelectAll);
 	select_nothing->setShortcut(QKeySequence::Deselect);
-	select_invert ->setShortcut(QKeySequence( tr("Ctrl+I")));
+	select_invert ->setShortcut(Qt::CTRL | Qt::Key_I);
 
 	select_all    ->setStatusTip( tr("Sélectionne tous les éléments du folio", "status bar tip") );
 	select_nothing->setStatusTip( tr("Désélectionne tous les éléments du folio", "status bar tip") );
@@ -640,9 +640,9 @@ void QETDiagramEditor::setUpActions()
 
 	zoom_in     ->setShortcut(QKeySequence::ZoomIn);
 	zoom_out    ->setShortcut(QKeySequence::ZoomOut);
-	zoom_content->setShortcut(QKeySequence( tr("Ctrl+8")));
-	zoom_fit    ->setShortcut(QKeySequence( tr("Ctrl+9")));
-	zoom_reset  ->setShortcut(QKeySequence( tr("Ctrl+0")));
+	zoom_content->setShortcut(Qt::CTRL | Qt::Key_8);
+	zoom_fit    ->setShortcut(Qt::CTRL | Qt::Key_9);
+	zoom_reset  ->setShortcut(Qt::CTRL | Qt::Key_0);
 
 	zoom_in     ->setStatusTip(tr("Agrandit le folio", "status bar tip"));
 	zoom_out    ->setStatusTip(tr("Rétrécit le folio", "status bar tip"));
@@ -1558,7 +1558,9 @@ void QETDiagramEditor::slot_updateActions()
 	m_csv_export                  -> setEnabled(editable_project);
 	m_project_export_conductor_num-> setEnabled(opened_project);
 	m_terminal_strip_dialog       -> setEnabled(editable_project);
+#ifdef QET_EXPORT_PROJECT_DB
 	m_export_project_db           -> setEnabled(editable_project);
+#endif
 	m_project_terminalBloc        -> setEnabled(editable_project);
 
 
@@ -1595,7 +1597,7 @@ void QETDiagramEditor::slot_updateUndoStack()
 
 /**
 	@brief QETDiagramEditor::slot_updateComplexActions
-	Manage the actions who need some conditions to be enable or not.
+	Manage the actions that need some conditions to be enabled or not.
 	This method does nothing if there is no project opened
 */
 void QETDiagramEditor::slot_updateComplexActions()
@@ -1631,7 +1633,7 @@ void QETDiagramEditor::slot_updateComplexActions()
 	int selected_elements_count = dc.count(DiagramContent::Elements);
 	m_find_element->setEnabled(selected_elements_count == 1);
 
-	//Action that need items (elements, conductors, texts...) selected, to be enabled
+	//Actions that need items (elements, conductors, texts...) selected, to be enabled
 	bool copiable_items  = dc.hasCopiableItems();
 	bool deletable_items = dc.hasDeletableItems();
 	m_cut              -> setEnabled(!ro && copiable_items);
@@ -2081,10 +2083,10 @@ void QETDiagramEditor::projectWasClosed(ProjectView *project_view)
 		undo_group.removeStack(project -> undoStack());
 		QETApp::unregisterProject(project);
 	}
-	//When project is closed, a lot of signal are emitted, notably if there is an item selected in a diagram.
-	//In some special case, since signal/slot connection can be direct or queued, some signal are handled after QObject is deleted, and crash qet
-	//notably in the function Diagram::elements when she call items() (I don't know exactly why).
-	//set nullptr to "m_selection_properties_editor->setDiagram()" fix this crash
+	//When project is closed, a lot of signals are emitted, notably if there is an item selected in a diagram.
+	//In some special case, since signal/slot connection can be direct or queued, some signals are handled after QObject is deleted, and crash qet
+	//notably in the function Diagram::elements when it calls items() (I don't know exactly why).
+	//set nullptr to "m_selection_properties_editor->setDiagram()" fixes this crash
 	m_selection_properties_editor->setDiagram(nullptr);
 	project_view -> deleteLater();
 	project -> deleteLater();
@@ -2351,62 +2353,55 @@ void QETDiagramEditor::generateTerminalBlock()
 #	pragma message("https://github.com/qelectrotech/qet_tb_generator")
 #endif
 
-	bool success;
+	bool success = false;
+	QList<QString> exeList;
 	QProcess *process = new QProcess(qApp);
+
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
+	exeList << (QETApp::dataDir() + "/binary/qet_tb_generator.exe")
+			<< (QDir::currentPath() + "/qet_tb_generator.exe")
+			<< QStandardPaths::findExecutable("qet_tb_generator.exe")
+			<< (QDir::homePath() + "/Application Data/qet/qet_tb_generator.exe")
+			<< "qet_tb_generator.exe"
+			<< "qet_tb_generator";    // from original code: missing ".exe" ???
+#elif  defined(Q_OS_MACOS)
+	exeList << (QETApp::dataDir() + "/binary/qet_tb_generator")
+			<< (QDir::currentPath() + "/qet_tb_generator")
+			<< QStandardPaths::findExecutable("qet_tb_generator")
+			<< (QDir::homePath() + "/.qet/qet_tb_generator.app")
+			<< "/Library/Frameworks/Python.framework/Versions/3.11/bin/qet_tb_generator";
+#else
+	exeList << (QETApp::dataDir() + "/binary/qet_tb_generator")
+			<< (QDir::currentPath() + "/qet_tb_generator")
+			<< (QDir::homePath() + "/.qet/qet_tb_generator")
+			<< QStandardPaths::findExecutable("qet_tb_generator")
+			<< "qet_tb_generator";
+#endif
 
 		// If launched under control:
 		//connect(process, SIGNAL(errorOcurred(int error)), this, SLOT(slot_generateTerminalBlock_error()));
 		//process->start("qet_tb_generator");
 
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
-	if (openedProjects().count()){
-		success = process->startDetached("qet_tb_generator", {(QETDiagramEditor::currentProjectView()->project()->filePath())});
-	}
-	else  {
-		success = process->startDetached("qet_tb_generator", {("")});
-	}
-	if (openedProjects().count()){
-		success = process->startDetached(QDir::homePath() + "/Application Data/qet/qet_tb_generator.exe", {(QETDiagramEditor::currentProjectView()->project()->filePath())});
-	}
-	else  {
-		success = process->startDetached(QDir::homePath() + "/Application Data/qet/qet_tb_generator.exe", {("")});
-	}
-	if (openedProjects().count()){
-		success = process->startDetached(QDir::homePath() + "/qet_tb_generator.exe", {(QETDiagramEditor::currentProjectView()->project()->filePath())});
-	}
-	else  {
-		success = process->startDetached(QDir::homePath() + "/qet_tb_generator.exe", {("")});
-	}
+	qInfo() << " project to use for qet_tb_generator: "
+			<< (QETDiagramEditor::currentProjectView()->project()->filePath());
 
-#elif  defined(Q_OS_MACOS)
-	if (openedProjects().count()){
-		success = process->startDetached("/Library/Frameworks/Python.framework/Versions/3.11/bin/qet_tb_generator", {(QETDiagramEditor::currentProjectView()->project()->filePath())});
+	if (openedProjects().count()) {
+		foreach(QString exe, exeList) {
+			if ((success == false) && exe.length() && QFile::exists(exe)) {
+				success = process->startDetached(exe, {(QETDiagramEditor::currentProjectView()->project()->filePath())});
+			}
+			if (success == true) {
+				qInfo() << " qet_tb_generator found here:" << exe;
+				break;
+			} else {
+				qInfo() << " qet_tb_generator not found :" << exe;
+			}
+		}
+	} else {
+		qInfo() << "No project loaded - no need to start \"qet_tb_generator\"";
 	}
-	else  {
-		success = process->startDetached("/Library/Frameworks/Python.framework/Versions/3.11/bin/qet_tb_generator", {("")});
-	}
-		if (openedProjects().count()){
-		success = process->startDetached(QDir::homePath() + "/.qet/qet_tb_generator.app", {(QETDiagramEditor::currentProjectView()->project()->filePath())});
-	}
-	else  {
-		success = process->startDetached(QDir::homePath() + "/.qet/qet_tb_generator.app", {("")});
-	}
+	process->close();
 
-#else
-	if (openedProjects().count()){
-		success = process->startDetached("qet_tb_generator", {(QETDiagramEditor::currentProjectView()->project()->filePath())});
-	}
-	else  {
-		success = process->startDetached("qet_tb_generator", {("")});
-	}
-	if (openedProjects().count()){
-		success = process->startDetached(QDir::homePath() + "/.qet/qet_tb_generator", {(QETDiagramEditor::currentProjectView()->project()->filePath())});
-	}
-	else  {
-		success = process->startDetached(QDir::homePath() + "/.qet/qet_tb_generator", {("")});
-	}
-
-#endif
 #if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
 	QString message=QObject::tr(
 		"To install the plugin qet_tb_generator"

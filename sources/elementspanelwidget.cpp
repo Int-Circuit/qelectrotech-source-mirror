@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -180,7 +180,7 @@ void ElementsPanelWidget::reloadAndFilter()
 }
 
 /**
-	* Emit the requestForProject signal with te selected project
+	* Emit the requestForProject signal with the selected project
 */
 void ElementsPanelWidget::activateProject()
 {

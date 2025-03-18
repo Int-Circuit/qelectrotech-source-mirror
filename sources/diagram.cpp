@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -186,7 +186,7 @@ void Diagram::drawBackground(QPainter *p, const QRectF &r) {
 	p -> drawRect(r);
 
 	if (draw_grid_) {
-			/* Draw the point of the grid
+			/* Draw the points of the grid
 			 * if background color is black,
 			 * then grid spots shall be white,
 			 * else they shall be black in color.
@@ -213,8 +213,8 @@ void Diagram::drawBackground(QPainter *p, const QRectF &r) {
 							  .insideBorderRect()
 							  .intersected(r);
 
-		qreal limite_x = rect.x() + rect.width();
-		qreal limite_y = rect.y() + rect.height();
+		qreal limit_x = rect.x() + rect.width();
+		qreal limit_y = rect.y() + rect.height();
 
 		int g_x = (int)ceil(rect.x());
 		while (g_x % xGrid) ++ g_x;
@@ -222,12 +222,33 @@ void Diagram::drawBackground(QPainter *p, const QRectF &r) {
 		while (g_y % yGrid) ++ g_y;
 
 		QPolygon points;
-		for (int gx = g_x ; gx < limite_x ; gx += xGrid) {
-			for (int gy = g_y ; gy < limite_y ; gy += yGrid) {
+		for (int gx = g_x ; gx < limit_x ; gx += xGrid) {
+			for (int gy = g_y ; gy < limit_y ; gy += yGrid) {
 				points << QPoint(gx, gy);
 			}
 		}
-		p -> drawPoints(points);
+
+		qreal zoom_factor = p->transform().m11();
+		int minWidthPen = settings.value(QStringLiteral("diagrameditor/grid_pointsize_min"), 1).toInt();
+		int maxWidthPen = settings.value(QStringLiteral("diagrameditor/grid_pointsize_max"), 1).toInt();
+		pen.setWidth(minWidthPen);
+		if (minWidthPen != maxWidthPen) {
+			qreal stepPen  = (maxWidthPen - minWidthPen) / (qreal)maxWidthPen;
+			qreal stepZoom = (5.0 - 1.0) / maxWidthPen;
+			for (int n=0; n<maxWidthPen; n++) {
+				if ((zoom_factor > (1.0 + n * stepZoom)) && (zoom_factor <= (1.0 + (n+1) * stepZoom))) {
+					int widthPen = minWidthPen + qRound(n * stepPen);
+					pen.setWidth(widthPen);
+				}
+			}
+			if		(zoom_factor <= 1.0)
+						pen.setWidth(minWidthPen);
+			else if (zoom_factor > (1.0 + stepZoom * maxWidthPen))
+						pen.setWidth(maxWidthPen);
+		}
+		p -> setPen(pen);
+		if (zoom_factor > 0.5) // no grid below ... !
+				p -> drawPoints(points);
 	}
 
 	if (use_border_) border_and_titleblock.draw(p);

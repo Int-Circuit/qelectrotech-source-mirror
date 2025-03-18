@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -91,7 +91,7 @@ void RotateSelectionCommand::undo()
 	for(const QPointer<ConductorTextItem>& cti : m_cond_text)
 	{
 		cti->forceRotateByUser(m_rotate_by_user.value(cti.data()));
-		if(!cti->wasRotateByUser())
+		if(!cti->wasRotatedByUser())
 			cti->parentConductor()->calculateTextItemPosition();
 	}
 }
@@ -106,7 +106,7 @@ void RotateSelectionCommand::redo()
 	
 		for(const QPointer<ConductorTextItem>& cti : m_cond_text)
 		{
-			m_rotate_by_user.insert(cti, cti->wasRotateByUser());
+			m_rotate_by_user.insert(cti, cti->wasRotatedByUser());
 			cti->forceRotateByUser(true);
 		}
 }

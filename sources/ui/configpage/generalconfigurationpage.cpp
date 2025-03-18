@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -71,6 +71,8 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
 	ui->DiagramEditor_yKeyGrid_sb->setValue(settings.value("diagrameditor/key_Ygrid", 10).toInt());
 	ui->DiagramEditor_xKeyGridFine_sb->setValue(settings.value("diagrameditor/key_fine_Xgrid", 1).toInt());
 	ui->DiagramEditor_yKeyGridFine_sb->setValue(settings.value("diagrameditor/key_fine_Ygrid", 1).toInt());
+	ui->DiagramEditor_Grid_PointSize_min_sb->setValue(settings.value("diagrameditor/grid_pointsize_min", 1).toInt());
+	ui->DiagramEditor_Grid_PointSize_max_sb->setValue(settings.value("diagrameditor/grid_pointsize_max", 1).toInt());
 	ui->m_use_system_color_cb->setChecked(settings.value("usesystemcolors", "true").toBool());
 	bool tabbed = settings.value("diagrameditor/viewmode", "tabbed") == "tabbed";
 	if(tabbed)
@@ -128,7 +130,9 @@ GeneralConfigurationPage::GeneralConfigurationPage(QWidget *parent) :
 	  et que la liste ne sera donc pas mise a jour.
 	*/
 	ui->MaxPartsElementEditorList_sb->setValue(settings.value("elementeditor/max-parts-element-editor-list", 200).toInt());
-	
+	ui->ElementEditor_Grid_PointSize_min_sb->setValue(settings.value("elementeditor/grid_pointsize_min", 1).toInt());
+	ui->ElementEditor_Grid_PointSize_max_sb->setValue(settings.value("elementeditor/grid_pointsize_max", 1).toInt());
+
 	QString path = settings.value("elements-collections/common-collection-path", "default").toString();
 	if (path != "default")
 	{
@@ -210,6 +214,8 @@ void GeneralConfigurationPage::applyConf()
 		//ELEMENT EDITOR
 	settings.setValue("elementeditor/default-informations", ui->m_default_elements_info->toPlainText());
 	settings.setValue("elementeditor/max-parts-element-editor-list", ui->MaxPartsElementEditorList_sb->value());
+	settings.setValue("elementeditor/grid_pointsize_min", ui->ElementEditor_Grid_PointSize_min_sb->value());
+	settings.setValue("elementeditor/grid_pointsize_max", ui->ElementEditor_Grid_PointSize_max_sb->value());
 
 		//DIAGRAM VIEW
 	settings.setValue("diagramview/gestures", ui->m_use_gesture_trackpad->isChecked());
@@ -237,6 +243,8 @@ void GeneralConfigurationPage::applyConf()
 	settings.setValue("diagrameditor/key_Ygrid", ui->DiagramEditor_yKeyGrid_sb->value());
 	settings.setValue("diagrameditor/key_fine_Xgrid", ui->DiagramEditor_xKeyGridFine_sb->value());
 	settings.setValue("diagrameditor/key_fine_Ygrid", ui->DiagramEditor_yKeyGridFine_sb->value());
+	settings.setValue("diagrameditor/grid_pointsize_min", ui->DiagramEditor_Grid_PointSize_min_sb->value());
+	settings.setValue("diagrameditor/grid_pointsize_max", ui->DiagramEditor_Grid_PointSize_max_sb->value());
 		//Dynamic text item
 	settings.setValue("diagrameditor/dynamic_text_rotation", ui->m_dyn_text_rotation_sb->value());
 	settings.setValue("diagrameditor/dynamic_text_width", ui->m_dyn_text_width_sb->value());
@@ -368,12 +376,13 @@ void GeneralConfigurationPage::fillLang()
 	ui->m_lang_cb->addItem(QET::Icons::sl,		tr("Slovène"), "sl");
 	ui->m_lang_cb->addItem(QET::Icons::nl,		tr("Pays-Bas"), "nl");
 	ui->m_lang_cb->addItem(QET::Icons::no,		tr("Norvege"), "nb");
-	ui->m_lang_cb->addItem(QET::Icons::be,		tr("Belgique-Flemish"), "be");
+	ui->m_lang_cb->addItem(QET::Icons::nl_BE,	tr("Belgique-Flemish"), "nl_BE");
 	ui->m_lang_cb->addItem(QET::Icons::tr,		tr("Turc"), "tr");
 	ui->m_lang_cb->addItem(QET::Icons::hu,		tr("Hongrois"), "hu");
 	ui->m_lang_cb->addItem(QET::Icons::mn,		tr("Mongol"), "mn");
 	ui->m_lang_cb->addItem(QET::Icons::uk,      tr("Ukrainien"), "uk");
 	ui->m_lang_cb->addItem(QET::Icons::zh,      tr("Chinois"), "zh");
+	ui->m_lang_cb->addItem(QET::Icons::se,      tr("Suédois"), "sv");
 		//set current index to the lang found in setting file
 		//if lang doesn't exist set to system
 	QSettings settings;
@@ -436,7 +445,7 @@ void GeneralConfigurationPage::on_m_common_elmt_path_cb_currentIndexChanged(int 
 {
 	if (index == 1)
 	{
-		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin de la collection commune"), QDir::homePath());
+		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin de la collection commune"), QETApp::documentDir());
 		if (!path.isEmpty()) {
 			ui->m_common_elmt_path_cb->setItemData(1, path, Qt::DisplayRole);
 		}
@@ -450,7 +459,7 @@ void GeneralConfigurationPage::on_m_company_elmt_path_cb_currentIndexChanged(int
 {
 	if (index == 1)
 	{
-		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin de la collection company"), QDir::homePath());
+		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin de la collection company"), QETApp::documentDir());
 		if (!path.isEmpty()) {
 			ui->m_company_elmt_path_cb->setItemData(1, path, Qt::DisplayRole);
 		}
@@ -464,7 +473,7 @@ void GeneralConfigurationPage::on_m_custom_elmt_path_cb_currentIndexChanged(int 
 {
 	if (index == 1)
 	{
-		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin de la collection utilisateur"), QDir::homePath());
+		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin de la collection utilisateur"), QETApp::documentDir());
 		if (!path.isEmpty()) {
 			ui->m_custom_elmt_path_cb->setItemData(1, path, Qt::DisplayRole);
 		}
@@ -478,7 +487,7 @@ void GeneralConfigurationPage::on_m_company_tbt_path_cb_currentIndexChanged(int 
 {
 	if (index == 1)
 	{
-		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin des cartouches company"), QDir::homePath());
+		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin des cartouches company"), QETApp::documentDir());
 		if (!path.isEmpty()) {
 			ui->m_company_tbt_path_cb->setItemData(1, path, Qt::DisplayRole);
 		}
@@ -492,7 +501,7 @@ void GeneralConfigurationPage::on_m_custom_tbt_path_cb_currentIndexChanged(int i
 {
 	if (index == 1)
 	{
-		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin des cartouches utilisateur"), QDir::homePath());
+		QString path = QFileDialog::getExistingDirectory(this, tr("Chemin des cartouches utilisateur"), QETApp::documentDir());
 		if (!path.isEmpty()) {
 			ui->m_custom_tbt_path_cb->setItemData(1, path, Qt::DisplayRole);
 		}
@@ -527,4 +536,26 @@ void GeneralConfigurationPage::on_MaxPartsElementEditorList_sb_valueChanged(int 
 		ui->MaxPartsElementEditorList_sb->setToolTip("");
 		ui->MaxPartsElementEditorList_sb->setStyleSheet("");
 	}
+}
+
+/**
+	@brief GeneralConfigurationPage::on_DiagramEditor_Grid_PointSize_min_sb_valueChanged
+	the min-value of the max-SpinBox has to be limited:
+	may not be smaller than current value of min-SpinBox
+	@param value - the new value of the min-SpinBox
+ */
+void GeneralConfigurationPage::on_DiagramEditor_Grid_PointSize_min_sb_valueChanged(int value)
+{
+	ui->DiagramEditor_Grid_PointSize_max_sb->setMinimum(std::max(1, value));
+}
+
+/**
+	@brief GeneralConfigurationPage::on_ElementEditor_Grid_PointSize_min_sb_valueChanged
+	the min-value of the max-SpinBox has to be limited:
+	may not be smaller than current value of min-SpinBox
+	@param value - the new value of the min-SpinBox
+ */
+void GeneralConfigurationPage::on_ElementEditor_Grid_PointSize_min_sb_valueChanged(int value)
+{
+	ui->ElementEditor_Grid_PointSize_max_sb->setMinimum(std::max(1, value));
 }

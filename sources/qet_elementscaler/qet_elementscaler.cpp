@@ -1,5 +1,5 @@
 /*
-	Copyright 2024 The QElectroTech Team
+	Copyright 2024-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -17,11 +17,12 @@
 */
 #include "qet_elementscaler.h"
 #include "../ui/thirdpartybinaryinstalldialog.h"
+#include "../qetapp.h"
 
 #include <QFile>
 #include <QProcess>
 #include <QInputDialog>
-#include <QDir>
+#include <QMessageBox>
 
 /**
  * @brief QET_ElementScaler
@@ -90,8 +91,17 @@ QByteArray ElementScaler(const QString &file_path, QWidget *parent)
 
 	if (process_.waitForFinished())
 	{
-		const auto byte_array{process_.readAll()};
+		const auto byte_array{process_.readAllStandardOutput()};
+		const auto error_output{process_.readAllStandardError()};
 		process_.close();
+		if (error_output.length() > 0) {
+			// inform the user about log-output via QMessageBox
+			QMessageBox msgBox;
+			msgBox.setText(QObject::tr("QET_ElementScaler: \nadditional information about %1 import / scaling").arg(file_path));
+			msgBox.setInformativeText(QObject::tr("See details here:"));
+			msgBox.setDetailedText(error_output);
+			msgBox.exec();
+		}
 		return byte_array;
 	}
 	else
@@ -103,13 +113,7 @@ QByteArray ElementScaler(const QString &file_path, QWidget *parent)
 
 QString ElementScalerDirPath()
 {
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
-	return (QDir::homePath() + QStringLiteral("/Application Data/qet/binary"));
-#elif defined(Q_OS_MACOS)
-	return (QDir::homePath() + QStringLiteral("/.qet/binary"));
-#else
-	return (QDir::homePath() + QStringLiteral("/.qet/binary"));
-#endif
+	return QETApp::dataDir() + "/binary";
 }
 
 /**

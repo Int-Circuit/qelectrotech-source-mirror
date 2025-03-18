@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -151,7 +151,7 @@ class ElementScene : public QGraphicsScene
 		void initPasteArea();
 		static bool zValueLessThan(QGraphicsItem *, QGraphicsItem *);
 		QMutex *m_decorator_lock;
-		void centerElementToOrigine();
+		void centerElementToOrigin();
 	
 	public slots:
 		void slot_select(const ElementContent &);

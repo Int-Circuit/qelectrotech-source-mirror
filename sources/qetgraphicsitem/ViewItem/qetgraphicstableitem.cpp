@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -58,12 +58,13 @@ void QetGraphicsTableItem::adjustTableToFolio(
 
 	auto size_ = table->size();
 	size_.setWidth(int(drawable_rect.width() - (margins.left() + margins.right())));
-		//Size must be a multiple of 10, because the table adjust itself by step of 10.
+		//Size must be a multiple of 10, because the table adjusts itself by step of 10.
 	while (size_.width()%10) {
-		--size_.rwidth();    }
+		--size_.rwidth();
+	}
 	table->setSize(size_);
 
-		//Calcul the maximum row to display to fit the nomenclature into diagram
+		//Calculate the maximum row to display to fit the nomenclature into diagram
 	auto available_height = drawable_rect.height() - table->pos().y();
 	auto min_row_height = table->minimumRowHeight();
 	table->setDisplayNRow(int(floor(available_height/min_row_height))); //Convert a double to int, but max_row_to_display is already rounded an integer so we assume everything is ok
@@ -274,7 +275,7 @@ void QetGraphicsTableItem::paint(
 		offset += m_header_item->sectionSize(i);
 	}
 
-		//Calcule the number of rows to display.
+		//calculate the number of rows to display.
 	auto row_count = m_model->rowCount();
 
 	if (m_previous_table) //Remove the number of row already displayed by previous tables
@@ -516,7 +517,7 @@ int QetGraphicsTableItem::displayedRowCount() const
 		return 0;
 	}
 
-		//Calcule the number of rows to display.
+		//calculate the number of rows to display.
 	auto row_count = m_model->rowCount();
 
 	if (m_previous_table) //Remove the number of row already displayed by previous tables
@@ -858,7 +859,7 @@ void QetGraphicsTableItem::modelReseted()
 
 /**
 	@brief QetGraphicsTableItem::setUpColumnAndRowMinimumSize
-	Calcule the minimum row height and the minimum column width for each columns
+	Calculate the minimum row height and the minimum column width for each columns
 	this function doesn't change the geometry of the table.
 */
 void QetGraphicsTableItem::setUpColumnAndRowMinimumSize()
@@ -990,21 +991,14 @@ void QetGraphicsTableItem::adjustColumnsWidth()
 	int sum_=0;
 	for(auto i= 0 ; i<m_model->columnCount() ; ++i)
 	{
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-		auto at_a = std::min(m_minimum_column_width.size()-1, i);               //In case of the I is higher than m_minimum_column_width or
-		auto at_b = std::min(m_header_item->minimumSectionWidth().size()-1, i); //m_header_item->minimumSectionWidth().size()
+		auto at_a = std::min((int)m_minimum_column_width.size()-1, i);               //In case of the I is higher than m_minimum_column_width or
+		auto at_b = std::min((int)m_header_item->minimumSectionWidth().size()-1, i); //m_header_item->minimumSectionWidth().size()
 		m_header_item->resizeSection(
 					i,
 					std::max(
 						m_minimum_column_width.at(at_a),
 						m_header_item->minimumSectionWidth().at(at_b))+b);
 		sum_+= m_header_item->sectionSize(i);
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
-		qDebug()<<"Help code for QT 6 or later";
-#endif
 	}
 
 

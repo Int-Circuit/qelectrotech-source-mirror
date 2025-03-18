@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -234,7 +234,6 @@ class QETProject : public QObject
 		void writeProjectPropertiesXml(QDomElement &);
 		void writeDefaultPropertiesXml(QDomElement &);
 		void addDiagram(Diagram *diagram, int pos = -1);
-		NamesList namesListForIntegrationCategory();
 		void writeBackup();
 		void init();
 		ProjectState openFile(QFile *file);

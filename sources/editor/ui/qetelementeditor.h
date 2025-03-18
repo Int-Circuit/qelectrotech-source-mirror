@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -86,8 +86,6 @@ class QETElementEditor : public QMainWindow
 		void on_m_new_action_triggered();
 		void on_m_open_action_triggered();
 		void on_m_open_from_file_action_triggered();
-		void on_m_open_dxf_action_triggered();
-		void on_m_open_scaled_element_action_triggered();
 		bool on_m_save_as_file_action_triggered();
 		void on_m_reload_action_triggered();
 		void on_m_quit_action_triggered();

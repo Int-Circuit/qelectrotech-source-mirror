@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -220,7 +220,7 @@ bool DiagramEventAddElement::buildElement()
 
 /**
 	@brief DiagramEventAddElement::addElement
-	Add an element at the current pos en current rotation,
+	Add an element at the current pos and current rotation,
 	if project autoconductor option is enable, and the element can be wired, we do it.
 */
 void DiagramEventAddElement::addElement()
@@ -248,9 +248,9 @@ void DiagramEventAddElement::addElement()
 	QUndoCommand *undo_object = new QUndoCommand(tr("Ajouter %1").arg(element->name()));
 	new AddGraphicsObjectCommand(element, m_diagram, m_element -> pos(), undo_object);
 
-		//When we search for free aligned terminal we
-		//temporally  remove m_element to avoid any interaction with the function Element::AlignedFreeTerminals
-		//this is useful when an element who have two (or more) terminals opposite,
+		//When we search for free aligned terminal we temporally remove m_element to
+		//avoid any interaction with the function Element::AlignedFreeTerminals
+		//This is useful when an element has two (or more) terminals on opposite sides,
 		//because m_element is exactly at the same pos of the new element
 		//added to the scene so new conductor are created between terminal of the new element
 		//and the opposite terminal of m_element.

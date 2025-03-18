@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -591,7 +591,7 @@ bool ElementsLocation::isWritable() const
 /**
 	@brief ElementsLocation::projectCollection
 	@return
-	If this location represente a item in an embedded project collection,
+	If this location represents an item in an embedded project collection,
 	return this collection else return nullptr.
 */
 XmlElementCollection *ElementsLocation::projectCollection() const
@@ -870,7 +870,7 @@ QIcon ElementsLocation::icon() const
 
 /**
 	@brief ElementLocation::name
-	@return The name of the represented element in the current local
+	@return The name of the represented element in the current locale
 */
 QString ElementsLocation::name() const
 {

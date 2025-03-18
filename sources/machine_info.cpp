@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -16,8 +16,10 @@
 	along with QElectroTech.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "machine_info.h"
-
+#include "qetapp.h"
 #include "qetversion.h"
+#include <QSettings>
+#include <QDirIterator>
 
 #include <QScreen>
 #include <QProcess>
@@ -27,6 +29,7 @@
 #include <QStorageInfo>
 #include <QLibraryInfo>
 #include <QStorageInfo>
+#include <QStandardPaths>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -144,9 +147,82 @@ void MachineInfo::send_info_to_debug()
 		  + "  - " + pc.cpu.Architecture
 		  + " - Version : "+pc.os.name
 		  + " - Kernel : "+pc.os.kernel;
+	qInfo()<< "";
+	
+	qInfo()<< " OS System language:"<< QLocale::system().name();
+	qInfo()<< " OS System Native Country Name:"<< QLocale::system().nativeCountryName();
+	qInfo()<< " OS System Native Language Name:"<< QLocale::system().nativeLanguageName();	
+	qInfo()<< "";
+	qInfo()<< " System language defined in QET configuration:"<< QString(QETApp::langFromSetting().toLatin1());
+	qInfo()<< " language Path:"<< QString(QETApp::languagesPath().toLatin1());
+	qInfo()<< " Common Elements Dir:"<< QString(QETApp::commonElementsDir().toLatin1());
+	qInfo()<< " Common TitleBlock Templates Dir:"<< QString(QETApp::commonTitleBlockTemplatesDir().toLatin1());
+	qInfo()<< " Custom Elements Dir:"<< QString(QETApp::customElementsDir().toLatin1());
+	qInfo()<< " Custom TitleBlock Templates Dir:"<< QString(QETApp::customTitleBlockTemplatesDir().toLatin1());
+	qInfo()<< " Company Elements Dir:"<< QString(QETApp::companyElementsDir().toLatin1());
+	qInfo()<< " Company TitleBlock Templates Dir:"<< QString(QETApp::companyTitleBlockTemplatesDir().toLatin1());
+	qInfo()<< "";
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
+	qInfo()<< " App-Config: see Registry \"HKEY_CURRENT_USER/Software/QElectroTech/\"";
+	qInfo()<< " additional config-files:";
+#else
+	qInfo()<< " For QET configuration-files:";
+#endif
+	qInfo()<< " App Config Location:"<< QETApp::configDir();
+	qInfo()<< " For data-files (user-/company-collections, titleblocks, etc.):";
+	qInfo()<< " App Data Location:"<< QETApp::dataDir();
+	qInfo()<< " Directory for project stalefiles:";
+	qInfo()<< " Generic Data Location:"<< QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/stalefiles/QElectroTech/";
+	// qInfo()<< " App Local DataLocation:"<< QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+	// qInfo()<< " Home Location:"<< QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+	// qInfo()<< " Runtime Location:"<< QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
+	// qInfo()<< " Cache Location:"<< QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+	qInfo()<< "";
+
+
+	qInfo()<< " Count the elements in your collections (Official-common-collection, company-collections, custom-collections):";
+	QStringList nameFilters;
+	nameFilters << "*.elmt";
+	
+	int commomElementsDir = 0;
+	QDirIterator it1(QETApp::commonElementsDir().toLatin1(),nameFilters,  QDir::Files, QDirIterator::Subdirectories);
+			while (it1.hasNext())
+			{
+				if(it1.next() > 0 )
+				{
+				commomElementsDir ++;
+				}
+			}
+	qInfo()<< " Common Elements count:"<< commomElementsDir << "Elements";
+	
+	
+	int customElementsDir = 0;
+	QDirIterator it2(QETApp::customElementsDir().toLatin1(), nameFilters, QDir::Files, QDirIterator::Subdirectories);
+			while (it2.hasNext())
+			{
+				if(it2.next() > 0 )
+				{
+				customElementsDir ++;
+				}
+			}
+	qInfo()<< " Custom Elements count:"<< customElementsDir << "Elements";
+	
+	int companyElementsDir = 0;
+	QDirIterator it3(QETApp::companyElementsDir().toLatin1(), nameFilters, QDir::Files, QDirIterator::Subdirectories);
+			while (it3.hasNext())
+			{
+				if(it3.next() > 0 )
+				{
+				companyElementsDir ++;
+				}
+			}
+	qInfo()<< " Company Elements count:"<< companyElementsDir << "Elements";
+	
+	qInfo()<< "";
+
 	qInfo()<< "*** Qt screens ***";
 
-	for (int ii = 0; ii < pc.screen.count; ++ii) {
+	for (int ii = 0; ii < pc.screen.count; ++ii) { 
 		qInfo()<<"( "
 			+ QString::number(ii + 1)
 			+ " : "
@@ -155,7 +231,8 @@ void MachineInfo::send_info_to_debug()
 			+ QString::number(pc.screen.height[ii])
 			+ " )";
 	}
-
+	qInfo()<< "";
+	
 	foreach (const QStorageInfo &storage, QStorageInfo::mountedVolumes()) {
 			if (storage.isReadOnly())
 				qDebug() << "isReadOnly:" << storage.isReadOnly();
@@ -167,7 +244,7 @@ void MachineInfo::send_info_to_debug()
 		 }
 		 
 	QStorageInfo storage(qApp->applicationDirPath());
-		  
+		
 			if (storage.isReadOnly())
 			qDebug() << "isReadOnly:" << storage.isReadOnly();
 	
@@ -175,7 +252,7 @@ void MachineInfo::send_info_to_debug()
 			qInfo()  << "FileSystemType:" << storage.fileSystemType();
 			qInfo()  << "SizeTotal:" << storage.bytesTotal()/1000000000  <<  "GB";
 			qInfo()  << "AvailableSize:" << storage.bytesAvailable()/1000000000 <<  "GB";
-		
+			qInfo()<< "Count All Elements in collections ="<< commomElementsDir + customElementsDir + companyElementsDir << "Elements";
 		
 }
 
@@ -411,3 +488,4 @@ QString MachineInfo::compilation_info()
 	}
 	return compilation_info;
 }
+

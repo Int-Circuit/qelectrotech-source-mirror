@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -941,19 +941,12 @@ QString BorderTitleBlock::incrementLetters(const QString &string) {
 	} else {
 		// separate previous digits from last digit
 		// separe les digits precedents du dernier digit
-		QString first_digits(string.left(string.count() - 1));
-		QChar last_digit(string.at(string.count() - 1));
+		QString first_digits(string.left(string.length() - 1));
+		char last_digit(string.at(string.length() - 1).unicode());
 		if (last_digit != 'Z') {
 			// increments the last digit
 			// incremente le dernier digit
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) // ### Qt 6: remove
-			last_digit = last_digit.toLatin1() + 1;
-#else
-#	if TODO_LIST
-#		pragma message("@TODO remove code for QT 6 or later")
-#	endif
-			qDebug() << "Help code for QT 6 or later";
-#endif
+			last_digit = (char)(string[string.length()-1].unicode()) + 1;
 			return(first_digits + QString(last_digit));
 		} else {
 			return(incrementLetters(first_digits) + "A");

@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -263,6 +263,42 @@ private:
 	ElementScene *m_scene =nullptr;
 	QList<QGraphicsItem*> m_items;
 
+};
+
+class RotateFineElementsCommand : public ElementEditionCommand
+{
+
+public:
+	RotateFineElementsCommand(ElementScene *scene, QUndoCommand *parent=nullptr);
+	void undo() override;
+	void redo() override;
+
+private:
+	ElementScene *m_scene =nullptr;
+	QList<QGraphicsItem*> m_items;
+
+};
+
+class MirrorElementsCommand : public ElementEditionCommand
+{
+public:
+	MirrorElementsCommand(ElementScene *scene, QUndoCommand *parent=nullptr);
+	void undo() override;
+	void redo() override;
+private:
+	ElementScene *m_scene =nullptr;
+	QList<QGraphicsItem*> m_items;
+};
+
+class FlipElementsCommand : public ElementEditionCommand
+{
+public:
+	FlipElementsCommand(ElementScene *scene, QUndoCommand *parent=nullptr);
+	void undo() override;
+	void redo() override;
+private:
+	ElementScene *m_scene =nullptr;
+	QList<QGraphicsItem*> m_items;
 };
 
 #endif

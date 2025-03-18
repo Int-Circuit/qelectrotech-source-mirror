@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -307,10 +307,12 @@ ElementContent ElementView::pasteAreaDefined(const QRectF &target_rect) {
 	@param pos Coin superieur gauche du rectangle cible
 */
 ElementContent ElementView::paste(const QDomDocument &xml_document, const QPointF &pos) {
+	// object to retrieve content added to the scheme by pasting
 	// objet pour recuperer le contenu ajoute au schema par le coller
 	ElementContent content_pasted;
 	m_scene -> fromXml(xml_document, pos, false, &content_pasted);
 
+	// if something has actually been added to the scheme, an undo object is created
 	// si quelque chose a effectivement ete ajoute au schema, on cree un objet d'annulation
 	if (content_pasted.count()) {
 		m_scene -> clearSelection();
@@ -321,10 +323,12 @@ ElementContent ElementView::paste(const QDomDocument &xml_document, const QPoint
 }
 
 /**
+	Paste the XML document "xml_document" at position pos
 	Colle le document XML xml_document a la position pos
 	@param xml_document Document XML a coller
 */
 ElementContent ElementView::pasteWithOffset(const QDomDocument &xml_document) {
+	// object to retrieve content added to the scheme by pasting
 	// objet pour recuperer le contenu ajoute au schema par le coller
 	ElementContent content_pasted;
 
@@ -332,32 +336,25 @@ ElementContent ElementView::pasteWithOffset(const QDomDocument &xml_document) {
 	QRectF pasted_content_bounding_rect = m_scene -> boundingRectFromXml(xml_document);
 	if (pasted_content_bounding_rect.isEmpty()) return(content_pasted);
 
-	// copier/coller avec decalage
-	QRectF final_pasted_content_bounding_rect;
-	++ offset_paste_count_;
-	if (!offset_paste_count_) {
-		// the pasted content was cut
-		start_top_left_corner_ = pasted_content_bounding_rect.topLeft();
-		final_pasted_content_bounding_rect = pasted_content_bounding_rect;
-	}
-	else {
-		// the pasted content was copied
-		if (offset_paste_count_ == 1) {
-			start_top_left_corner_ = pasted_content_bounding_rect.topLeft();
-		} else {
-			pasted_content_bounding_rect.moveTopLeft(start_top_left_corner_);
-		}
+	// ok ... there is something to do for us!
+	int initialOffsetX = 10 + (qRound((pasted_content_bounding_rect.width())/10) * 10);
 
-		// on applique le decalage qui convient
-		final_pasted_content_bounding_rect = applyMovement(
-			pasted_content_bounding_rect,
-			QETElementEditor::pasteOffset()
-		);
-	}
+	// paste copied parts with offset
+	// copier/coller avec decalage
+	QRectF  final_pasted_content_bounding_rect;
+	QPointF offset(initialOffsetX, 0);
+	++ offset_paste_count_;  // == 0 when selection was cut to clipboard
+	// place pasted parts right from copied selection or already pasted parts
+	offset.setX(initialOffsetX * offset_paste_count_);
+	offset.setY(0);
+	final_pasted_content_bounding_rect = pasted_content_bounding_rect.translated(offset);
+
+	start_top_left_corner_ = pasted_content_bounding_rect.topLeft();
 	QPointF old_start_top_left_corner = start_top_left_corner_;
 	start_top_left_corner_ = final_pasted_content_bounding_rect.topLeft();
 	m_scene -> fromXml(xml_document, start_top_left_corner_, false, &content_pasted);
 
+	// if something has actually been added to the scheme, a cancel object is created
 	// si quelque chose a effectivement ete ajoute au schema, on cree un objet d'annulation
 	if (content_pasted.count()) {
 		m_scene -> clearSelection();
@@ -483,6 +480,7 @@ bool ElementView::event(QEvent *e) {
 
 /**
 	Utilise le pincement du trackpad pour zoomer
+	Use trackpad pinch to zoom
 	@brief ElementView::gestureEvent
 	@param event
 	@return
@@ -505,6 +503,7 @@ bool ElementView::gestureEvent(QGestureEvent *event){
 
 /**
 	Dessine l'arriere-plan de l'editeur, cad la grille.
+	Draws the editor background, i.e. the grid.
 	@param p Le QPainter a utiliser pour dessiner
 	@param r Le rectangle de la zone a dessiner
 */
@@ -517,20 +516,23 @@ void ElementView::drawBackground(QPainter *p, const QRectF &r) {
 	p -> setRenderHint(QPainter::SmoothPixmapTransform, false);
 
 	// dessine un fond blanc
+	// draw a white background
 	p -> setPen(Qt::NoPen);
 	p -> setBrush(Qt::white);
 	p -> drawRect(r);
 
 	// determine le zoom en cours
+	// determine the zoom-level
 	qreal zoom_factor = transform().m11();
 
 	// choisit la granularite de la grille en fonction du zoom en cours
+	// selects the grid granularity according to the current zoom level
 	int drawn_x_grid = 1;//scene_ -> xGrid();
 	int drawn_y_grid = 1;//scene_ -> yGrid();
 	bool draw_grid = true;
 	bool draw_cross = false;
 
-	if (zoom_factor < (4.0/3.0)) { //< no grid
+	if (zoom_factor < 1.0) { //< no grid
 		draw_grid = false;
 	} else if (zoom_factor < 4.0) { //< grid 10*10
 		drawn_x_grid *= 10;
@@ -550,25 +552,43 @@ void ElementView::drawBackground(QPainter *p, const QRectF &r) {
 	m_scene->setGrid(drawn_x_grid, drawn_y_grid);
 
 	if (draw_grid) {
-		// draw the dot of the grid
+		// draw the dots of the grid
 		QPen pen(Qt::black);
 		pen.setCosmetic(true);
+		QSettings settings;
+		int minWidthPen = settings.value(QStringLiteral("elementeditor/grid_pointsize_min"), 1).toInt();
+		int maxWidthPen = settings.value(QStringLiteral("elementeditor/grid_pointsize_max"), 1).toInt();
+		pen.setWidth(minWidthPen);
+		if (minWidthPen != maxWidthPen) {
+			qreal stepPen  = (maxWidthPen - minWidthPen) / (qreal)maxWidthPen;
+			qreal stepZoom = (25.0 - 1.0) / maxWidthPen;
+			for (int n=0; n<maxWidthPen; n++) {
+				if ((zoom_factor > (1.0 + n * stepZoom)) && (zoom_factor <= (1.0 + (n+1) * stepZoom))) {
+					int widthPen = minWidthPen + qRound(n * stepPen);
+					pen.setWidth(widthPen);
+				}
+			}
+			if		(zoom_factor <= 1.0)
+						pen.setWidth(minWidthPen);
+			else if (zoom_factor > (1.0 + stepZoom * maxWidthPen))
+						pen.setWidth(maxWidthPen);
+		}
 		p -> setPen(pen);
 		p -> setBrush(Qt::NoBrush);
-		qreal limite_x = r.x() + r.width();
-		qreal limite_y = r.y() + r.height();
+		qreal limit_x = r.x() + r.width();
+		qreal limit_y = r.y() + r.height();
 
 		int g_x = (int)ceil(r.x());
 		while (g_x % drawn_x_grid) ++ g_x;
 		int g_y = (int)ceil(r.y());
 		while (g_y % drawn_y_grid) ++ g_y;
 
-		for (int gx = g_x ; gx < limite_x ; gx += drawn_x_grid) {
-			for (int gy = g_y ; gy < limite_y ; gy += drawn_y_grid) {
+		for (int gx = g_x ; gx < limit_x ; gx += drawn_x_grid) {
+			for (int gy = g_y ; gy < limit_y ; gy += drawn_y_grid) {
 				if (draw_cross) {
 					if (!(gx % 10) && !(gy % 10)) {
-						p -> drawLine(QLineF(gx - 0.25, gy, gx + 0.25, gy));
-						p -> drawLine(QLineF(gx, gy - 0.25, gx, gy + 0.25));
+						p -> drawLine(QLineF(gx - (pen.width()/4.0), gy, gx + (pen.width()/4.0), gy));
+						p -> drawLine(QLineF(gx, gy - (pen.width()/4.0), gx, gy + (pen.width()/4.0)));
 					} else {
 						p -> drawPoint(gx, gy);
 					}
@@ -591,10 +611,12 @@ void ElementView::drawBackground(QPainter *p, const QRectF &r) {
 	@return
 */
 QRectF ElementView::applyMovement(const QRectF &start, const QPointF &offset) {
+	// calculates the offset to be applied from the offset
 	// calcule le decalage a appliquer a partir de l'offset
 	QPointF final_offset;
 	final_offset.rx() =  start.width() + offset.x();
 
+	// applies the calculated offset
 	// applique le decalage ainsi calcule
 	return(start.translated(final_offset));
 }

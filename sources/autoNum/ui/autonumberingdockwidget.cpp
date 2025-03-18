@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -151,7 +151,7 @@ void AutoNumberingDockWidget::setProject(QETProject *project,
 		//Set Combobox Context
 	setContext();
 	
-	ui->m_configure_pb->setShortcut(QKeySequence( tr("Ctrl+Shift+P")));
+	ui->m_configure_pb->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_P);
 }
 
 /**

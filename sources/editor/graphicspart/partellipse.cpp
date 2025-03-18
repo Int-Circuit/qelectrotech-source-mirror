@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -57,14 +57,7 @@ void PartEllipse::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
 	QPen t = painter -> pen();
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	t.setCosmetic(options && options -> levelOfDetail < 1.0);
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
 	t.setCosmetic(options && options -> levelOfDetailFromTransform(painter->worldTransform()) < 1.0);
-#endif
 	if (isSelected())
 		t.setColor(Qt::red);
 
@@ -89,19 +82,24 @@ const QDomElement PartEllipse::toXml(QDomDocument &xml_document) const
 	QDomElement xml_element;
 	if (qFuzzyCompare(rect().width(), rect().height()))
 	{
+		double w = qRound(rect().width() * 100.0) / 100.0;
 		xml_element = xml_document.createElement("circle");
-		xml_element.setAttribute("diameter", QString("%1").arg(rect().width()));
+		xml_element.setAttribute("diameter", QString("%1").arg(w));
 	}
 	else
 	{
+		double w = qRound(rect().width()  * 100.0) / 100.0;
+		double h = qRound(rect().height() * 100.0) / 100.0;
 		xml_element = xml_document.createElement("ellipse");
-		xml_element.setAttribute("width",  QString("%1").arg(rect().width()));
-		xml_element.setAttribute("height", QString("%1").arg(rect().height()));
+		xml_element.setAttribute("width",  QString("%1").arg(w));
+		xml_element.setAttribute("height", QString("%1").arg(h));
 	}
 
 	QPointF top_left(sceneTopLeft());
-	xml_element.setAttribute("x", QString("%1").arg(top_left.x()));
-	xml_element.setAttribute("y", QString("%1").arg(top_left.y()));
+	double x = qRound(top_left.x() * 100.0) / 100.0;
+	double y = qRound(top_left.y() * 100.0) / 100.0;
+	xml_element.setAttribute("x", QString("%1").arg(x));
+	xml_element.setAttribute("y", QString("%1").arg(y));
 
 	stylesToXml(xml_element);
 
@@ -181,7 +179,7 @@ QVariant PartEllipse::itemChange(QGraphicsItem::GraphicsItemChange change, const
 {
 	if (change == ItemPositionHasChanged)
 	{
-		adjusteHandlerPos();
+		adjustHandlerPos();
 	}
 	else if (change == ItemSceneChange)
 	{
@@ -231,6 +229,56 @@ bool PartEllipse::sceneEventFilter(QGraphicsItem *watched, QEvent *event)
 	return false;
 }
 
+
+void PartEllipse::setRotation(qreal angle) {
+	qreal diffAngle = qRound((angle - rotation()) * 100.0) / 100.0;
+	m_rot = QET::correctAngle(angle, true);
+// idea taken from QET_ElementScaler:
+	auto p1 = mapToScene(m_rect.x(), m_rect.y());
+	qreal width  = m_rect.height();
+	qreal height = m_rect.width();
+	qreal x; qreal y;
+	if (diffAngle > 0) {
+		x = (p1.y() + m_rect.height()) * (-1);
+		y = p1.x();
+	} else {
+		x = m_rect.y();
+		y = (m_rect.x() + m_rect.width()) * (-1);
+	}
+	p1 = mapFromScene(x, y);
+	m_rect = QRectF(p1.x(), p1.y(), width, height);
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
+}
+
+qreal PartEllipse::rotation() const {
+	return qRound(m_rot * 100.0) / 100.0;
+}
+
+void PartEllipse::flip() {
+	auto p1 = mapToScene(m_rect.x(), m_rect.y());
+	p1.setY(((-1.0) * p1.y()) - m_rect.height());
+	p1 = mapFromScene(p1.x(), p1.y());
+	m_rect = QRectF(p1.x(), p1.y(), m_rect.width(), m_rect.height());
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
+}
+
+void PartEllipse::mirror() {
+	auto p1 = mapToScene(m_rect.x(), m_rect.y());
+	p1.setX(((-1.0) * p1.x()) - m_rect.width());
+	p1 = mapFromScene(p1.x(), p1.y());
+	m_rect = QRectF(p1.x(), p1.y(), m_rect.width(), m_rect.height());
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
+}
+
+
+
+
 void PartEllipse::switchResizeMode()
 {
 	if (m_resize_mode == 1)
@@ -248,9 +296,9 @@ void PartEllipse::switchResizeMode()
 }
 
 /**
-	@brief PartEllipse::adjusteHandlerPos
+	@brief PartEllipse::adjustHandlerPos
 */
-void PartEllipse::adjusteHandlerPos()
+void PartEllipse::adjustHandlerPos()
 {
 	if (m_handler_vector.isEmpty())
 		return;
@@ -300,7 +348,7 @@ void PartEllipse::handlerMouseMoveEvent(QetGraphicsHandlerItem *qghi, QGraphicsS
 	else
 		setRect(QetGraphicsHandlerUtility::mirrorRectForPosAtIndex(m_rect, new_pos, m_vector_index));
 
-	adjusteHandlerPos();
+	adjustHandlerPos();
 }
 
 /**

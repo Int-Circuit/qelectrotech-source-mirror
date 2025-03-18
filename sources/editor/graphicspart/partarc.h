@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -56,10 +56,14 @@ class PartArc : public AbstractPartEllipse
 
 		QPainterPath shape() const override;
 		QPainterPath shadowShape() const override;
-		void setRect(const QRectF &rect) override {AbstractPartEllipse::setRect(rect); adjusteHandlerPos();}
-		void setStartAngle(const int &start_angle) override {AbstractPartEllipse::setStartAngle(start_angle); adjusteHandlerPos();}
-		void setSpanAngle(const int &span_angle) override {AbstractPartEllipse::setSpanAngle(span_angle); adjusteHandlerPos();}
+		void setRect(const QRectF &rect) override {AbstractPartEllipse::setRect(rect); adjustHandlerPos();}
+		void setStartAngle(const int &start_angle) override {AbstractPartEllipse::setStartAngle(start_angle); adjustHandlerPos();}
+		void setSpanAngle(const int &span_angle) override {AbstractPartEllipse::setSpanAngle(span_angle); adjustHandlerPos();}
 		QRectF sceneGeometricRect() const override;
+		void   setRotation(qreal angle);
+		qreal  rotation() const;
+		void   flip();
+		void   mirror();
 
 		void addHandler() override;
 		void removeHandler() override;
@@ -71,7 +75,7 @@ class PartArc : public AbstractPartEllipse
 
 	private:
 		void switchResizeMode();
-		void adjusteHandlerPos();
+		void adjustHandlerPos();
 		void handlerMousePressEvent   (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
 		void handlerMouseMoveEvent    (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
 		void handlerMouseReleaseEvent (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
@@ -83,5 +87,6 @@ class PartArc : public AbstractPartEllipse
 			m_vector_index = -1;
 		QPointF m_span_point;
 		QVector<QetGraphicsHandlerItem *> m_handler_vector;
+		qreal m_rot = 0;
 };
 #endif

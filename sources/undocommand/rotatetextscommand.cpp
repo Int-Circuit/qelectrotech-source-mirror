@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ m_diagram(diagram)
 		if(dti->type() == ConductorTextItem::Type)
 		{
 			ConductorTextItem *cti = static_cast<ConductorTextItem *>(dti);
-			m_cond_texts.insert(cti, cti->wasRotateByUser());
+			m_cond_texts.insert(cti, cti->wasRotatedByUser());
 		}
 	}
 	for(ElementTextItemGroup *etig : dc.selectedTextsGroup())

@@ -1,5 +1,5 @@
 /*
-		Copyright 2006-2024 The QElectroTech Team
+		Copyright 2006-2025 The QElectroTech Team
 		This file is part of QElectroTech.
 
 		QElectroTech is free software: you can redistribute it and/or modify
@@ -40,7 +40,7 @@ class ElementData : public PropertiesInterface
 			AllReport      = 6,
 			Master         = 8,
 			Slave          = 16,
-			Terminale      = 32,
+			Terminal       = 32,
 			Thumbnail      = 64};
 		Q_ENUM(Type)
 		Q_DECLARE_FLAGS(Types, Type)

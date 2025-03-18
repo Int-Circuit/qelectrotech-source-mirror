@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -179,7 +179,7 @@ void ElementInfoWidget::disableLiveEdit()
 void ElementInfoWidget::buildInterface()
 {
 	QStringList keys;
-	if (m_element.data()->elementData().m_type == ElementData::Terminale) {
+	if (m_element.data()->elementData().m_type == ElementData::Terminal) {
 		keys = QETInformation::terminalElementInfoKeys();
 	 } else {
 		keys = QETInformation::elementInfoKeys();

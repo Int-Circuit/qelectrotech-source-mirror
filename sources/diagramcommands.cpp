@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -105,13 +105,13 @@ void PasteDiagramCommand::redo()
 	}
 	else
 	{
-		const QList <QGraphicsItem *> qgis_list = content.items(filter);
+		const QList<QGraphicsItem *> qgis_list = content.items(filter);
 		for (QGraphicsItem *item : qgis_list) {
 			diagram->addItem(item);
 		}
 	}
 
-	const QList <QGraphicsItem *> qgis_list = content.items();
+	const QList<QGraphicsItem *> qgis_list = content.items();
 	for (QGraphicsItem *qgi : qgis_list)
 		qgi -> setSelected(true);
 }

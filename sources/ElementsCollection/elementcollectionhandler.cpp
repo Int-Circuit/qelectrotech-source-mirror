@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -399,7 +399,7 @@ ElementsLocation ElementCollectionHandler::createDir(ElementsLocation &parent, c
 	@brief ElementCollectionHandler::importFromProject
 	Import the element represented by location to the embedded collection
 	of project at the same path.
-	location must represente an element owned by a project embedded collection
+	location must represent an element owned by a project embedded collection
 	@param project : project where copy the element
 	@param location : location to copy
 	@return true if import with success

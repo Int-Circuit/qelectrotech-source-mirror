@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -414,12 +414,12 @@ const QDomDocument ElementScene::toXml(bool all_parts)
 {
 	QRectF size= elementSceneGeometricRect();
 
-	// if the element doesn't contains the origin point of the scene
-	// we move the element to the origin for solve this default before saving
+	// if the element doesn't contain the origin point of the scene
+	// we move the element to the origin to solve this default before saving
 	if (!size.contains(0,0) && all_parts)
 	{
-		centerElementToOrigine();
-		//recalcul the size after movement
+		centerElementToOrigin();
+		//recalculate the size after movement
 		size = elementSceneGeometricRect();
 	}
 
@@ -463,15 +463,14 @@ const QDomDocument ElementScene::toXml(bool all_parts)
 	auto type_ = m_element_data.m_type;
 	if (type_ == ElementData::Slave  ||
 		type_ == ElementData::Master ||
-		type_ == ElementData::Terminale ||
-		type_ == ElementData::Thumbnail)
+		type_ == ElementData::Terminal)
 	{
 		root.appendChild(m_element_data.kindInfoToXml(xml_document));
 	}
 
-	if(type_ == ElementData::Simple ||
-	   type_ == ElementData::Master ||
-	   type_ == ElementData::Terminale||
+	if (type_ == ElementData::Simple ||
+		type_ == ElementData::Master ||
+		type_ == ElementData::Terminal ||
 		type_ == ElementData::Thumbnail)
 	{
 		QDomElement element_info = xml_document.createElement("elementInformations");
@@ -479,10 +478,12 @@ const QDomDocument ElementScene::toXml(bool all_parts)
 		root.appendChild(element_info);
 	}
 
-	//complementary information about the element
-	QDomElement informations_element = xml_document.createElement("informations");
-	root.appendChild(informations_element);
-	informations_element.appendChild(xml_document.createTextNode(m_element_data.m_drawing_information));
+	//complementary information about the element, when available
+	if (!(m_element_data.m_drawing_information.trimmed().isEmpty())) {
+		QDomElement informations_element = xml_document.createElement("informations");
+		root.appendChild(informations_element);
+		informations_element.appendChild(xml_document.createTextNode(m_element_data.m_drawing_information.trimmed()));
+	}
 
 	QDomElement description = xml_document.createElement("description");
 
@@ -517,11 +518,11 @@ QRectF ElementScene::boundingRectFromXml(const QDomDocument &xml_document)
 	ElementContent loaded_content = loadContent(xml_document);
 	if (loaded_content.isEmpty()) return(QRectF());
 
-	// calcule the boundingRect
+	// calculate the boundingRect
 	// calcule le boundingRect
 	QRectF bounding_rect = elementContentBoundingRect(loaded_content);
 
-	// destroy charged parties
+	// destroy loaded parts
 	// detruit les parties chargees
 	qDeleteAll(loaded_content);
 
@@ -598,6 +599,7 @@ QRectF ElementScene::elementSceneGeometricRect() const
 	foreach (QGraphicsItem *qgi, items()) {
 		if (qgi->type() == ElementPrimitiveDecorator::Type) continue;
 		if (qgi->type() == QGraphicsRectItem::Type) continue;
+		if (qgi->type() == PartText::Type) continue;
 		if (qgi->type() == PartDynamicTextField::Type) continue;
 		if (CustomElementPart *cep = dynamic_cast <CustomElementPart*> (qgi)) {
 			esgr |= cep -> sceneGeometricRect();
@@ -1317,29 +1319,21 @@ bool ElementScene::zValueLessThan(QGraphicsItem *item1, QGraphicsItem *item2)
 }
 
 /**
-	@brief ElementScene::centerElementToOrigine
+	@brief ElementScene::centerElementToOrigin
 	try to center better is possible the element to the scene
-	(the calcul isn't optimal but work good)
 */
-void ElementScene::centerElementToOrigine()
+void ElementScene::centerElementToOrigin()
 {
 	QRectF size= elementSceneGeometricRect();
-	int center_x = qRound(size.center().x());
-	int center_y = qRound(size.center().y());
-
-	//define the movement of translation
-	int move_x = center_x - (center_x %10);
-	if (center_x < 0) move_x -= 10;
-	int move_y = center_y - (center_y %10);
-	if (center_y < 0) move_y -= 10;
-
-	//move each primitive by @move
+	// relative move of each primitive with @move with integer values
+	int offsetX = qRound(size.center().x()) * (-1);
+	int offsetY = qRound(size.center().y()) * (-1);
 	foreach (QGraphicsItem *qgi, items()) {
 		if (qgi -> type() == ElementPrimitiveDecorator::Type) continue;
 		if (qgi -> type() == QGraphicsRectItem::Type) continue;
-		//deselect item for disable decorator
+		// deselect item to disable decorator
 		qgi -> setSelected(false);
-		qgi -> moveBy(-(move_x), -(move_y));
+		qgi -> moveBy(offsetX, offsetY);
 	}
 	emit (needZoomFit());
 }

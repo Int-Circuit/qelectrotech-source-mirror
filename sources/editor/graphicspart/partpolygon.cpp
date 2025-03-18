@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -66,14 +66,7 @@ void PartPolygon::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 	applyStylesToQPainter(*painter);
 
 	QPen t = painter -> pen();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	t.setCosmetic(options && options -> levelOfDetail < 1.0);
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
 	t.setCosmetic(options && options -> levelOfDetailFromTransform(painter->worldTransform()) < 1.0);
-#endif
 	if (isSelected()) t.setColor(Qt::red);
 	painter -> setPen(t);
 
@@ -116,7 +109,7 @@ void PartPolygon::fromXml(const QDomElement &qde)
 
 /**
 	@brief PartPolygon::toXml
-	Export this polygin in xml
+	Export this polygon in xml
 	@param xml_document : Xml document to use for create the xml element
 	@return an xml element that describe this polygon
 */
@@ -126,8 +119,10 @@ const QDomElement PartPolygon::toXml(QDomDocument &xml_document) const
 	int i = 1;
 	foreach(QPointF point, m_polygon) {
 		point = mapToScene(point);
-		xml_element.setAttribute(QString("x%1").arg(i), QString("%1").arg(point.x()));
-		xml_element.setAttribute(QString("y%1").arg(i), QString("%1").arg(point.y()));
+		qreal x = ((qRound(point.x() * 100.0)) / 100.0);
+		qreal y = ((qRound(point.y() * 100.0)) / 100.0);
+		xml_element.setAttribute(QString("x%1").arg(i), QString("%1").arg(x));
+		xml_element.setAttribute(QString("y%1").arg(i), QString("%1").arg(y));
 		++ i;
 	}
 	if (!m_closed) xml_element.setAttribute("closed", "false");
@@ -217,7 +212,7 @@ void PartPolygon::setPolygon(const QPolygonF &polygon)
 	if (m_polygon == polygon) return;
 	prepareGeometryChange();
 	m_polygon = polygon;
-	adjusteHandlerPos();
+	adjustHandlerPos();
 	emit polygonChanged();
 }
 
@@ -295,17 +290,46 @@ void PartPolygon::resetAllHandlerColor()
 
 
 void PartPolygon::setRotation(qreal angle) {
-
-	QTransform rotation = QTransform().translate(m_polygon.first().x(),m_polygon.first().y()).rotate(angle-m_rot).translate(-m_polygon.first().x(),-m_polygon.first().y());
-	m_rot=angle;
-
-	setPolygon(rotation.map(m_polygon));
+	qreal diffAngle = qRound((angle - rotation()) * 100.0) / 100.0;
+	m_rot = QET::correctAngle(angle, true);
+	for (auto &pt : m_polygon) {
+		pt = mapToScene(pt.x(), pt.y());
+		pt = QTransform().rotate(diffAngle).map(pt);
+		pt = mapFromScene(pt.x(), pt.y());
+	}
+	setPolygon(m_polygon);
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit polygonChanged();
 }
 
 qreal PartPolygon::rotation() const {
-	return m_rot;
+	return qRound(m_rot * 100.0) / 100.0;
 }
 
+void PartPolygon::flip() {
+	for (auto &pt : m_polygon) {
+		pt = mapToScene(pt.x(), pt.y());
+		pt = QPointF(pt.x(), (-1) * pt.y());
+		pt = mapFromScene(pt.x(), pt.y());
+	}
+	setPolygon(m_polygon);
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit polygonChanged();
+}
+
+void PartPolygon::mirror() {
+	for (auto &pt : m_polygon) {
+		pt = mapToScene(pt.x(), pt.y());
+		pt = QPointF((-1) * pt.x(), pt.y());
+		pt = mapFromScene(pt.x(), pt.y());
+	}
+	setPolygon(m_polygon);
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit polygonChanged();
+}
 
 
 /**
@@ -318,7 +342,7 @@ QVariant PartPolygon::itemChange(QGraphicsItem::GraphicsItemChange change, const
 {
 	if (change == ItemPositionHasChanged)
 	{
-		adjusteHandlerPos();
+		adjustHandlerPos();
 	}
 	else if (change == ItemSceneChange)
 	{
@@ -393,9 +417,9 @@ void PartPolygon::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 }
 
 /**
-	@brief PartPolygon::adjusteHandlerPos
+	@brief PartPolygon::adjustHandlerPos
 */
-void PartPolygon::adjusteHandlerPos()
+void PartPolygon::adjustHandlerPos()
 {
 	if(m_handler_vector.isEmpty())
 		return;
@@ -444,7 +468,7 @@ void PartPolygon::handlerMouseMoveEvent(QetGraphicsHandlerItem *qghi, QGraphicsS
 
 	prepareGeometryChange();
 	m_polygon.replace(m_vector_index, new_pos);
-	adjusteHandlerPos();
+	adjustHandlerPos();
 	emit polygonChanged();
 }
 

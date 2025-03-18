@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -98,7 +98,7 @@ void ElementPropertiesEditorWidget::upDateInterface()
 		ui->m_master_type_cb->setCurrentIndex(
 					ui->m_master_type_cb->findData (
 						m_data.m_master_type));
-	} else if (m_data.m_type == ElementData::Terminale) {
+	} else if (m_data.m_type == ElementData::Terminal) {
 		ui->m_terminal_type_cb->setCurrentIndex(
 					ui->m_terminal_type_cb->findData(
 						m_data.m_terminal_type));
@@ -121,7 +121,7 @@ void ElementPropertiesEditorWidget::setUpInterface()
 	ui->m_base_type_cb->addItem (tr("Esclave"), ElementData::Slave);
 	ui->m_base_type_cb->addItem (tr("Renvoi de folio suivant"),   ElementData::NextReport);
 	ui->m_base_type_cb->addItem (tr("Renvoi de folio précédent"), ElementData::PreviousReport);
-	ui->m_base_type_cb->addItem (tr("Bornier"), ElementData::Terminale);
+	ui->m_base_type_cb->addItem (tr("Bornier"), ElementData::Terminal);
 	ui->m_base_type_cb->addItem (tr("Vignette"), ElementData::Thumbnail);
 
 		// Slave option
@@ -181,7 +181,7 @@ void ElementPropertiesEditorWidget::updateTree()
 		case ElementData::Slave:
 			ui->m_tree->setDisabled(true);
 			break;
-		case ElementData::Terminale:
+		case ElementData::Terminal:
 			ui->m_tree->setEnabled(true);
 			break;
 		default:
@@ -205,6 +205,8 @@ void ElementPropertiesEditorWidget::populateTree()
 					  QETInformation::translatedInfoKey(key));
 		qtwi->setData(0, Qt::UserRole, key);
 		qtwi->setText(1, m_data.m_informations.value(key).toString());
+		// Adjust column width
+		ui->m_tree->resizeColumnToContents(0);
 	}
 }
 
@@ -225,7 +227,7 @@ void ElementPropertiesEditorWidget::on_m_buttonBox_accepted()
 	else if (m_data.m_type == ElementData::Master) {
 		m_data.m_master_type = ui->m_master_type_cb->currentData().value<ElementData::MasterType>();
 	}
-	else if (m_data.m_type == ElementData::Terminale)
+	else if (m_data.m_type == ElementData::Terminal)
 	{
 		m_data.m_terminal_type = ui->m_terminal_type_cb->currentData().value<ElementData::TerminalType>();
 		m_data.m_terminal_function = ui->m_terminal_func_cb->currentData().value<ElementData::TerminalFunction>();
@@ -258,7 +260,7 @@ void ElementPropertiesEditorWidget::on_m_base_type_cb_currentIndexChanged(int in
 		slave  = true;
 	else if (type_ == ElementData::Master)
 		master = true;
-	else if (type_ == ElementData::Terminale)
+	else if (type_ == ElementData::Terminal)
 		terminal = true;
 
 	ui->m_slave_gb->setVisible(slave);

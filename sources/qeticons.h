@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -98,6 +98,7 @@ namespace QET {
 		extern QIcon EndLineSimple;
 		extern QIcon EndLineTriangle;
 		extern QIcon EPS;
+		extern QIcon Flip;
 		extern QIcon Folder;
 		extern QIcon FolderDelete;
 		extern QIcon FolderEdit;
@@ -123,6 +124,7 @@ namespace QET {
 		extern QIcon InsertImage;
 		extern QIcon Lower;
 		extern QIcon IC_MoveFile;
+		extern QIcon Mirror;
 		extern QIcon Names;
 		extern QIcon Neutral;
 		extern QIcon NewDiagram;
@@ -211,11 +213,12 @@ namespace QET {
 		extern QIcon sl;
 		extern QIcon nl;
 		extern QIcon no;
-		extern QIcon be;
+		extern QIcon nl_BE;
 		extern QIcon tr;
 		extern QIcon uk;
 		extern QIcon mn;
 		extern QIcon zh;
+		extern QIcon se;
 		extern QIcon translation;
 		extern QIcon listDrawings;
 		extern QIcon AutoNum;

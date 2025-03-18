@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class QPropertyUndoCommand;
 	This class represents an ellipse primitive which may be used to compose the
 	drawing of an electrical element within the element editor.
 */
-class PartEllipse : public  AbstractPartEllipse
+class PartEllipse : public AbstractPartEllipse
 {
 		Q_OBJECT
 
@@ -39,6 +39,9 @@ class PartEllipse : public  AbstractPartEllipse
 	private:
 		PartEllipse(const PartEllipse &);
 	
+	signals:
+		void rotationChanged();
+
 		// methods
 	public:
 		enum { Type = UserType + 1103 };
@@ -56,7 +59,11 @@ class PartEllipse : public  AbstractPartEllipse
 		void              fromXml (const QDomElement &) override;
 		QPainterPath shape() const override;
 		QPainterPath shadowShape() const override;
-		void setRect(const QRectF &rect) override {AbstractPartEllipse::setRect(rect); adjusteHandlerPos();}
+		void setRect(const QRectF &rect) override {AbstractPartEllipse::setRect(rect); adjustHandlerPos();}
+		void   setRotation(qreal angle);
+		qreal  rotation() const;
+		void   flip();
+		void   mirror();
 
 		void addHandler() override;
 		void removeHandler() override;
@@ -68,7 +75,7 @@ class PartEllipse : public  AbstractPartEllipse
 
 	private:
 		void switchResizeMode();
-		void adjusteHandlerPos();
+		void adjustHandlerPos();
 		void handlerMousePressEvent   (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
 		void handlerMouseMoveEvent    (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
 		void handlerMouseReleaseEvent (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
@@ -77,5 +84,6 @@ class PartEllipse : public  AbstractPartEllipse
 		QPropertyUndoCommand *m_undo_command;
 		int m_resize_mode = 1,
 			m_vector_index = -1;
+		qreal m_rot = 0;
 };
 #endif

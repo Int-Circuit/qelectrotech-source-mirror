@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -21,6 +21,12 @@
 
 #include <QtXml>
 /**
+	This class represents a list of names, used by elements and categories
+	to embed the same name in several languages.
+	Languages are represented by two or five letters (typically the first
+	two of the system locale); examples: en for English, fr for French,
+	pt_BR for Brazilian Portuguese.
+	French:
 	Cette classe represente une liste de noms, utilisee
 	par les elements et categories pour embarquer un meme nom en plusieurs
 	langues.
@@ -36,7 +42,7 @@ class NamesList {
 	
 	// attributes
 	private:
-	QHash<QString, QString> hash_names;
+	QMap<QString, QString> map_names;
 	
 	public:
 	static int MetaTypeId;

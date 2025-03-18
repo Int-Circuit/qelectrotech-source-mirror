@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 #include "../diagram.h"
 #include "../diagramposition.h"
 #include "../qetapp.h"
+#include "../qetgraphicsitem/conductor.h"
 #include "../qetgraphicsitem/element.h"
 #include "../qetxml.h"
 
@@ -189,12 +190,14 @@ namespace autonum
 	QString AssignVariables::formulaToLabel(QString formula,
 						sequentialNumbers &seqStruct,
 						Diagram *diagram,
-						const Element *elmt)
+						const Element *elmt,
+						const Conductor *cndr)
 	{
 		AssignVariables av(std::move(formula),
 				   seqStruct,
 				   diagram,
-				   elmt);
+				   elmt,
+				   cndr);
 		seqStruct = av.m_seq_struct;
 		return av.m_assigned_label;
 	}
@@ -222,8 +225,45 @@ namespace autonum
 		str.replace("%{supplier}", dc.value("supplier").toString());
 		str.replace("%{quantity}", dc.value("quantity").toString());
 		str.replace("%{unity}", dc.value("unity").toString());
-		str.replace("%{auxiliary1}", dc.value("auxiliary1").toString());
+				str.replace("%{auxiliary1}", dc.value("auxiliary1").toString());
+		str.replace("%{description_auxiliary1}", dc.value("description_auxiliary1").toString());
+		str.replace("%{designation_auxiliary1}", dc.value("designation_auxiliary1").toString());
+		str.replace("%{manufacturer_auxiliary1}", dc.value("manufacturer_auxiliary1").toString());
+		str.replace("%{manufacturer_reference_auxiliary1}", dc.value("manufacturer_reference_auxiliary1").toString());
+		str.replace("%{supplier_auxiliary1}", dc.value("supplier_auxiliary1").toString());
+		str.replace("%{quantity_auxiliary1}", dc.value("quantity_auxiliary1").toString());
+		str.replace("%{unity_auxiliary1}", dc.value("unity_auxiliary1").toString());
+		
 		str.replace("%{auxiliary2}", dc.value("auxiliary2").toString());
+		str.replace("%{description_auxiliary2}", dc.value("description_auxiliary2").toString());
+		str.replace("%{designation_auxiliary2}", dc.value("designation_auxiliary2").toString());
+		str.replace("%{manufacturer_auxiliary2}", dc.value("manufacturer_auxiliary2").toString());
+		str.replace("%{manufacturer_reference_auxiliary2}", dc.value("manufacturer_reference_auxiliary2").toString());
+		str.replace("%{supplier_auxiliary2}", dc.value("supplier_auxiliary2").toString());
+		str.replace("%{quantity_auxiliary2}", dc.value("quantity_auxiliary2").toString());
+		str.replace("%{unity_auxiliary2}", dc.value("unity_auxiliary2").toString());
+		
+		
+		str.replace("%{auxiliary3}", dc.value("auxiliary3").toString());
+		str.replace("%{description_auxiliary3}", dc.value("description_auxiliary3").toString());
+		str.replace("%{designation_auxiliary3}", dc.value("designation_auxiliary3").toString());
+		str.replace("%{manufacturer_auxiliary3}", dc.value("manufacturer_auxiliary3").toString());
+		str.replace("%{manufacturer_reference_auxiliary3}", dc.value("manufacturer_reference_auxiliary3").toString());
+		str.replace("%{supplier_auxiliary3}", dc.value("supplier_auxiliary3").toString());
+		str.replace("%{quantity_auxiliary3}", dc.value("quantity_auxiliary3").toString());
+		str.replace("%{unity_auxiliary3}", dc.value("unity_auxiliary3").toString());
+		
+		
+		str.replace("%{auxiliary4}", dc.value("auxiliary4").toString());
+		str.replace("%{description_auxiliary4}", dc.value("description_auxiliary4").toString());
+		str.replace("%{designation_auxiliary4}", dc.value("designation_auxiliary4").toString());
+		str.replace("%{manufacturer_auxiliary4}", dc.value("manufacturer_auxiliary4").toString());
+		str.replace("%{manufacturer_reference_auxiliary4}", dc.value("manufacturer_reference_auxiliary4").toString());
+		str.replace("%{supplier_auxiliary4}", dc.value("supplier_auxiliary4").toString());
+		str.replace("%{quantity_auxiliary4}", dc.value("quantity_auxiliary4").toString());
+		str.replace("%{unity_auxiliary4}", dc.value("unity_auxiliary4").toString());
+		
+		
 		str.replace("%{machine_manufacturer_reference}",
 			    dc.value("machine_manufacturer_reference").toString());
 		str.replace("%{location}", dc.value("location").toString());
@@ -264,13 +304,14 @@ namespace autonum
 	AssignVariables::AssignVariables(const QString& formula,
 					 const sequentialNumbers& seqStruct,
 					 Diagram *diagram,
-					 const Element *elmt):
+					 const Element *elmt,
+					 const Conductor *cndr):
 	m_diagram(diagram),
 	m_arg_formula(formula),
 	m_assigned_label(formula),
 	m_seq_struct(seqStruct),
-	m_element(elmt)
-	
+	m_element(elmt),
+	m_conductor(cndr)
 	{
 		if (m_diagram)
 		{
@@ -310,6 +351,14 @@ namespace autonum
 				}
 				m_assigned_label.replace("%l", m_diagram->convertPosition(m_element->scenePos()).letter());
 				m_assigned_label.replace("%prefix", m_element->getPrefix());
+			}
+
+			if (m_conductor)
+			{
+				m_assigned_label.replace("%wf", cndr->properties().m_function);
+				m_assigned_label.replace("%wv", cndr->properties().m_tension_protocol);
+				m_assigned_label.replace("%wc", cndr->properties().m_wire_color);
+				m_assigned_label.replace("%ws", cndr->properties().m_wire_section);
 			}
 
 			assignTitleBlockVar();

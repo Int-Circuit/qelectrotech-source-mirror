@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -42,8 +42,9 @@ PartTerminal::~PartTerminal()
 }
 
 /**
+	Import terminal properties from an XML element
 	Importe les proprietes d'une borne depuis un element XML
-	@param xml_elmt Element XML a lire
+	@param xml_elmt Element XML a lire / XML element to read
 */
 void PartTerminal::fromXml(const QDomElement &xml_elmt) {
 	d -> fromXml(xml_elmt);
@@ -83,18 +84,8 @@ void PartTerminal::paint(
 	QPen t;
 	t.setWidthF(1.0);
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	t.setCosmetic(options && options -> levelOfDetail < 1.0);
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
-	t.setCosmetic(
-				options
-				&& options->levelOfDetailFromTransform(
-					painter->worldTransform())
-				< 1.0);
-#endif
+	t.setCosmetic(options && options -> levelOfDetailFromTransform(painter->worldTransform()) < 1.0);
+
 	// dessin de la borne en rouge
 	t.setColor(isSelected() ? Terminal::neutralColor : Qt::red);
 	painter -> setPen(t);
@@ -150,7 +141,7 @@ void PartTerminal::setOrientation(Qet::Orientation ori) {
 	prepareGeometryChange();
 	d -> m_orientation = ori;
 	updateSecondPoint();
-	emit orientationChanged();
+	emit orientationChanged(); // all terminal-signals call "updateForm"
 }
 
 /**
@@ -166,9 +157,21 @@ void PartTerminal::setRotation(qreal angle) {
 	else if (180 <= angle_mod && angle_mod < 270) new_ori = Qet::South;
 	else new_ori = Qet::West;
 
+	qreal diffAngle = qRound((angle - rotation()) * 100.0) / 100.0;
+
+	auto p1 = QTransform().rotate(diffAngle).map(pos());
+	d->m_pos.setX(p1.x()); d->m_pos.setY(p1.y());
+	setPos(d->m_pos);
 	setOrientation(new_ori);
+	updateSecondPoint();
+	prepareGeometryChange();
+	emit orientationChanged(); // all terminal-signals call "updateForm"
 }
 
+/**
+	@brief PartTerminal::rotation
+	@return current rotation-angle in degrees
+*/
 qreal PartTerminal::rotation() const {
 	switch (d->m_orientation) {
 		case Qet::North : return 0;
@@ -180,13 +183,56 @@ qreal PartTerminal::rotation() const {
 }
 
 /**
+	@brief PartTerminal::flip
+	turn part upside down
+*/
+void PartTerminal::flip() {
+	d->m_pos.setX(         pos().x());
+	d->m_pos.setY((-1.0) * pos().y());
+	switch (d->m_orientation) {
+		case Qet::North : setOrientation(Qet::South);
+						  break;
+		case Qet::East  : break;
+		case Qet::South : setOrientation(Qet::North);
+						  break;
+		case Qet::West  : break;
+	}
+	setPos(d->m_pos);
+	updateSecondPoint();
+	prepareGeometryChange();
+	emit yChanged(); // all terminal-signals call "updateForm"
+}
+
+/**
+	@brief PartTerminal::mirror
+	turn part from left to right
+*/
+void PartTerminal::mirror() {
+	d->m_pos.setX((-1.0) * pos().x());
+	d->m_pos.setY(         pos().y());
+	switch (d->m_orientation) {
+		case Qet::North : break;
+		case Qet::East  : setOrientation(Qet::West);
+						  break;
+		case Qet::South : break;
+		case Qet::West  : setOrientation(Qet::East);
+						  break;
+	}
+	setPos(d->m_pos);
+	updateSecondPoint();
+	prepareGeometryChange();
+	emit xChanged(); // all terminal-signals call "updateForm"
+}
+
+
+/**
 	@brief PartTerminal::setTerminalName
 	@param name
 */
 void PartTerminal::setTerminalName(const QString& name) {
 	if (d -> m_name == name) return;
 	d -> m_name = name;
-	emit nameChanged();
+	emit nameChanged(); // all terminal-signals call "updateForm"
 }
 
 /**
@@ -200,7 +246,7 @@ void PartTerminal::setTerminalType(TerminalData::Type type)
 		return;
 	}
 	d->m_type = type;
-	emit terminalTypeChanged();
+	emit terminalTypeChanged(); // all terminal-signals call "updateForm"
 }
 
 void PartTerminal::setNewUuid()
@@ -209,6 +255,8 @@ void PartTerminal::setNewUuid()
 }
 
 /**
+	Updates the position of the second point according to the position
+	and orientation of the terminal.
 	Met a jour la position du second point en fonction de la position et de
 	l'orientation de la borne.
 */

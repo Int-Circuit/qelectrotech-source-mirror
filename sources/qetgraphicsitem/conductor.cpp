@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -203,7 +203,7 @@ void Conductor::segmentsToPath()
 	if (isSelected() && !m_moving_segment)
 	{
 		if(handlerPoints().size() == m_handler_vector.size())
-			adjusteHandlerPos();
+			adjustHandlerPos();
 		else
 		{
 			removeHandler();
@@ -384,9 +384,11 @@ void Conductor::generateConductorPath(const QPointF &p1, Qet::Orientation o1, co
 	points << depart0;
 
 	// prolongement de la borne de depart
+	// extend start terminal
 	points << depart;
 
 	// commence le vrai trajet
+	// starts the real path
 	if (depart.y() < arrivee.y()) {
 		// trajet descendant
 		if ((ori_depart == Qet::North && (ori_arrivee == Qet::South || ori_arrivee == Qet::West)) || (ori_depart == Qet::East && ori_arrivee == Qet::West)) {
@@ -519,15 +521,8 @@ void Conductor::paint(QPainter *painter, const QStyleOptionGraphicsItem *options
 	final_conductor_pen.setStyle(m_properties.style);
 	final_conductor_pen.setJoinStyle(Qt::SvgMiterJoin); // better rendering with dot
 
-		//Use a cosmetique line, below a certain zoom
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	if (options && options -> levelOfDetail < 1.0)
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
-	if (options && options->levelOfDetailFromTransform(painter->worldTransform()) < 1.0)
-#endif
+		//Use a cosmetic line, below a certain zoom
+	if (options && options->levelOfDetailFromTransform(painter->worldTransform()) < 0.5)
 	{
 		final_conductor_pen.setCosmetic(true);
 	}
@@ -718,7 +713,7 @@ QVariant Conductor::itemChange(GraphicsItemChange change, const QVariant &value)
 		calculateTextItemPosition();
 	}
 	else if (change == QGraphicsItem::ItemPositionHasChanged && isSelected()) {
-		adjusteHandlerPos();
+		adjustHandlerPos();
 	}
 
 	return(QGraphicsObject::itemChange(change, value));
@@ -770,10 +765,10 @@ bool Conductor::sceneEventFilter(QGraphicsItem *watched, QEvent *event)
 }
 
 /**
-	@brief Conductor::adjusteHandlerPos
+	@brief Conductor::adjustHandlerPos
 	Adjust the position of the handler item
 */
-void Conductor::adjusteHandlerPos()
+void Conductor::adjustHandlerPos()
 {
 	if (m_handler_vector.isEmpty())
 		return;
@@ -824,7 +819,7 @@ void Conductor::handlerMouseMoveEvent(QetGraphicsHandlerItem *qghi, QGraphicsSce
 			//Position of the last point
 		QPointF p = m_moved_segment -> middle();
 
-			//Calcul the movement
+			//Calculate the movement
 		m_moved_segment -> moveX(pos_.x() - p.x());
 		m_moved_segment -> moveY(pos_.y() - p.y());
 
@@ -1100,7 +1095,7 @@ QDomElement Conductor::toXml(QDomDocument &dom_document,
 		dom_element.setAttribute("userx", QString::number(m_text_item->pos().x()));
 		dom_element.setAttribute("usery", QString::number(m_text_item->pos().y()));
 	}
-	if(m_text_item->wasRotateByUser())
+	if(m_text_item->wasRotatedByUser())
 		dom_element.setAttribute("rotation", QString::number(m_text_item->rotation()));
 
 	return(dom_element);
@@ -1339,17 +1334,17 @@ void Conductor::calculateTextItemPosition()
 		relatedPotentialConductors(false).size() > 0)
 	{
 
-		Conductor *longuest_conductor = longuestConductorInPotential(this);
+		Conductor *longest_conductor = longestConductorInPotential(this);
 
-			//The longuest conductor isn't this conductor
-			//we call calculateTextItemPosition of the longuest conductor
-		if(longuest_conductor != this)
+			//The longest conductor isn't this conductor
+			//we call calculateTextItemPosition of the longest conductor
+		if(longest_conductor != this)
 		{
-			longuest_conductor -> calculateTextItemPosition();
+			longest_conductor -> calculateTextItemPosition();
 			return;
 		}
 
-			//At this point this conductor is the longuest conductor we hide all text of conductor_list
+			//At this point this conductor is the longest conductor we hide all text of conductor_list
 		foreach (Conductor *c, relatedPotentialConductors(false)) {
 					c -> textItem() -> setVisible(false);
 		}
@@ -1374,7 +1369,7 @@ void Conductor::calculateTextItemPosition()
 		Qt::Orientations rotation;
 		QPointF text_pos = posForText(rotation);
 
-		if (!m_text_item -> wasRotateByUser())
+		if (!m_text_item -> wasRotatedByUser())
 		{
 			rotation == Qt::Vertical ? m_text_item -> setRotation(m_properties.verti_rotate_text):
 									   m_text_item -> setRotation(m_properties.horiz_rotate_text);
@@ -1505,7 +1500,7 @@ void Conductor::refreshText()
 		{
 			if (diagram())
 			{
-				QString text = autonum::AssignVariables::formulaToLabel(m_properties.m_formula, m_autoNum_seq, diagram());
+				QString text = autonum::AssignVariables::formulaToLabel(m_properties.m_formula, m_autoNum_seq, diagram(), nullptr, this);
 				m_properties.text = text;
 				m_text_item->setPlainText(text);
 			}
@@ -1590,7 +1585,7 @@ void Conductor::setProperties(const ConductorProperties &property)
 	{
 		if (diagram())
 		{
-			QString text = autonum::AssignVariables::formulaToLabel(m_properties.m_formula, m_autoNum_seq, diagram());
+			QString text = autonum::AssignVariables::formulaToLabel(m_properties.m_formula, m_autoNum_seq, diagram(), nullptr, this);
 			m_properties.text = text;
 		}
 		else if (m_properties.text.isEmpty())
@@ -2072,19 +2067,19 @@ QPointF Conductor::movePointIntoPolygon(const QPointF &point, const QPainterPath
 }
 
 /**
-	@brief longuestConductorInPotential
+	@brief longestConductorInPotential
 	@param conductor : a conductor in the potential to search
 	@param all_diagram : true -> search in the whole project, false -> search only in the diagram of conductor
-	@return the longuest conductor in the same potential of conductor
+	@return the longest conductor in the same potential of conductor
 */
-Conductor * longuestConductorInPotential(Conductor *conductor, bool all_diagram) {
-	Conductor *longuest_conductor = conductor;
-	//Search the longuest conductor
+Conductor * longestConductorInPotential(Conductor *conductor, bool all_diagram) {
+	Conductor *longest_conductor = conductor;
+	//Search the longest conductor
 	foreach (Conductor *c, conductor -> relatedPotentialConductors(all_diagram))
-		if (c -> length() > longuest_conductor -> length())
-			longuest_conductor = c;
+		if (c -> length() > longest_conductor -> length())
+			longest_conductor = c;
 
-	return longuest_conductor;
+	return longest_conductor;
 }
 
 /**

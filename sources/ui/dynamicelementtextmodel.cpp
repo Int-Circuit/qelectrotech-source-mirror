@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -970,7 +970,7 @@ QModelIndex DynamicElementTextModel::indexFromGroup(
 /**
 	@brief DynamicElementTextModel::indexIsText
 	@param index
-	@return True if index represente a text, both for the column 0 and 1.
+	@return True if index represents a text, both for the column 0 and 1.
 	Return false if index is a child of an index associated to a text.
 */
 bool DynamicElementTextModel::indexIsText(const QModelIndex &index) const
@@ -1000,7 +1000,7 @@ bool DynamicElementTextModel::indexIsText(const QModelIndex &index) const
 /**
 	@brief DynamicElementTextModel::indexIsGroup
 	@param index
-	@return True if index represente a group, both for the column 0 and 1.
+	@return True if index represents a group, both for the column 0 and 1.
 	Return false if index is a child of an index associated to a group.
 */
 bool DynamicElementTextModel::indexIsGroup(const QModelIndex &index) const
@@ -1623,17 +1623,12 @@ QWidget *DynamicTextItemDelegate::createEditor(
 			if(!deti)
 				break;
 				
-				//We use a QMap because the keys of the map are sorted, then no matter the current local,
-				//the value of the combo box are always alphabetically sorted
-			QMap <QString, QString> info_map;
-			for(const QString& str : availableInfo(deti)) {
-				info_map.insert(QETInformation::translatedInfoKey(str), str);
-			}
-			
 			QComboBox *qcb = new QComboBox(parent);
 			qcb->setObjectName("info_text");
-			for (const QString& key : info_map.keys()) {
-				qcb->addItem(key, info_map.value(key));
+
+			QStringList strl = availableInfo(deti);
+			for (int i=0; i<strl.size();++i) {
+				qcb -> addItem(QETInformation::translatedInfoKey(strl[i]), strl[i]);
 			}
 			return qcb;
 		}

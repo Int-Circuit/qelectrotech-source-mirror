@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -61,14 +61,7 @@ void PartArc::paint(QPainter *painter, const QStyleOptionGraphicsItem *options, 
 		//Always remove the brush
 	painter -> setBrush(Qt::NoBrush);
 	QPen t = painter -> pen();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	t.setCosmetic(options && options -> levelOfDetail < 1.0);
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
 	t.setCosmetic(options && options -> levelOfDetailFromTransform(painter->worldTransform()) < 1.0);
-#endif
 	painter -> setPen(t);
 
 	if (isSelected())
@@ -106,13 +99,21 @@ const QDomElement PartArc::toXml(QDomDocument &xml_document) const
 {
 	QDomElement xml_element = xml_document.createElement("arc");
 	QPointF top_left(sceneTopLeft());
-	xml_element.setAttribute("x", QString("%1").arg(top_left.x()));
-	xml_element.setAttribute("y", QString("%1").arg(top_left.y()));
-	xml_element.setAttribute("width",  QString("%1").arg(rect().width()));
-	xml_element.setAttribute("height", QString("%1").arg(rect().height()));
+	
+	qreal x = qRound(top_left.x()    * 100.0) / 100.0;
+	qreal y = qRound(top_left.y()    * 100.0) / 100.0;
+	qreal w = qRound(rect().width()  * 100.0) / 100.0;
+	qreal h = qRound(rect().height() * 100.0) / 100.0;
+	qreal s = qRound(m_start_angle   * 100.0) / 100.0;
+	qreal a = qRound(m_span_angle    * 100.0) / 100.0;
+
+	xml_element.setAttribute("x", QString("%1").arg(x));
+	xml_element.setAttribute("y", QString("%1").arg(y));
+	xml_element.setAttribute("width",  QString("%1").arg(w));
+	xml_element.setAttribute("height", QString("%1").arg(h));
 		//to maintain compatibility with the previous version, we write the angle in degrees.
-	xml_element.setAttribute("start", QString("%1").arg(m_start_angle / 16));
-	xml_element.setAttribute("angle", QString("%1").arg(m_span_angle / 16));
+	xml_element.setAttribute("start", QString("%1").arg(s / 16));
+	xml_element.setAttribute("angle", QString("%1").arg(a / 16));
 	stylesToXml(xml_element);
 	return(xml_element);
 }
@@ -162,6 +163,68 @@ QPainterPath PartArc::shadowShape() const
 	return (pps.createStroke(shape));
 }
 
+
+void PartArc::setRotation(qreal angle) {
+	qreal diffAngle = qRound((angle - rotation()) * 100.0) / 100.0;
+	m_rot = QET::correctAngle(angle, true);
+// idea taken from QET_ElementScaler:
+	auto p1 = mapToScene(m_rect.x(),m_rect.y());
+	qreal width  = m_rect.height();
+	qreal height = m_rect.width();
+	qreal x; qreal y;
+	if (diffAngle > 0) {
+		m_start_angle += 270.0 * 16;
+		while (m_start_angle < 0) { m_start_angle += (360*16); }
+		while (m_start_angle >= (360*16)) { m_start_angle -= (360*16); }
+		x = (p1.y() + m_rect.height()) * (-1);
+		y = p1.x();
+	} else {
+		m_start_angle -= 270.0 * 16;
+		while (m_start_angle < 0) { m_start_angle += (360*16); }
+		while (m_start_angle >= (360*16)) { m_start_angle -= (360*16); }
+		x = p1.y();
+		y = (p1.x() + m_rect.width()) * (-1);
+	}
+	p1 = mapFromScene(x, y);
+	m_rect  = QRectF(p1.x(), p1.y(), width, height);
+
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
+}
+
+qreal PartArc::rotation() const {
+	return qRound(m_rot * 100.0) / 100.0;
+}
+
+void PartArc::flip() {
+	m_start_angle = (-1) * m_start_angle;
+	m_span_angle  = (-1) * m_span_angle;
+	while (m_start_angle < 0) { m_start_angle += (360*16); }
+	while (m_start_angle >= (360*16)) { m_start_angle -= (360*16); }
+	auto p1 = mapToScene(m_rect.x(),m_rect.y());
+	p1.setY(((-1.0) * p1.y()) - m_rect.height());
+	p1 = mapFromScene(p1.x(),p1.y());
+	m_rect  = QRectF(m_rect.x(), p1.y(), m_rect.width(), m_rect.height());
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
+}
+
+void PartArc::mirror() {
+	m_start_angle = (180.0 * 16) - m_start_angle;
+	m_span_angle = (-1) * m_span_angle;
+	while (m_start_angle < 0) { m_start_angle += (360*16); }
+	while (m_start_angle >= (360*16)) { m_start_angle -= (360*16); }
+	auto p1 = mapToScene(m_rect.x(),m_rect.y());
+	p1.setX(((-1.0) * p1.x()) - m_rect.width());
+	p1 = mapFromScene(p1.x(), p1.y());
+	m_rect  = QRectF(p1.x(), m_rect.y(), m_rect.width(), m_rect.height());
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit rectChanged();
+}
+
 /**
  * @brief PartArc::sceneGeometricRect
  * @return the minimum,
@@ -199,7 +262,7 @@ QVariant PartArc::itemChange(QGraphicsItem::GraphicsItemChange change, const QVa
 {
 	if (change == ItemPositionHasChanged)
 	{
-		adjusteHandlerPos();
+		adjustHandlerPos();
 	}
 	else if (change == ItemSceneChange)
 	{
@@ -285,9 +348,9 @@ void PartArc::switchResizeMode()
 }
 
 /**
-	@brief PartArc::adjusteHandlerPos
+	@brief PartArc::adjustHandlerPos
 */
-void PartArc::adjusteHandlerPos()
+void PartArc::adjustHandlerPos()
 {
 	if (m_handler_vector.isEmpty())
 		return;

@@ -256,7 +256,7 @@ bool projectDataBase::createDataBase()
 	m_data_base.exec("PRAGMA temp_store = MEMORY");
 	m_data_base.exec("PRAGMA journal_mode = MEMORY");
 	m_data_base.exec("PRAGMA synchronous = OFF");
-
+	
 	QSqlQuery query_(m_data_base);
 	bool first_ = true;
 
@@ -336,8 +336,6 @@ void projectDataBase::createElementNomenclatureView()
 						 "ei.location AS location,"
 						 "ei.comment AS comment,"
 						 "ei.function AS function,"
-						 "ei.auxiliary1 AS auxiliary1,"
-						 "ei.auxiliary2 AS auxiliary2,"
 						 "ei.description AS description,"
 						 "ei.designation AS designation,"
 						 "ei.manufacturer AS manufacturer,"
@@ -346,6 +344,47 @@ void projectDataBase::createElementNomenclatureView()
 						 "ei.supplier AS supplier,"
 						 "ei.quantity AS quantity,"
 						 "ei.unity AS unity,"
+						 "ei.auxiliary1 AS auxiliary1,"
+						 "ei.description_auxiliary1 AS description_auxiliary1,"
+						 "ei.designation_auxiliary1 AS designation_auxiliary1,"
+						 "ei.manufacturer_auxiliary1 AS manufacturer_auxiliary1,"
+						 "ei.manufacturer_reference_auxiliary1 AS manufacturer_reference_auxiliary1,"
+						 "ei.machine_manufacturer_reference_auxiliary1 AS machine_manufacturer_reference_auxiliary1,"
+						 "ei.supplier_auxiliary1 AS supplier_auxiliary1,"
+						 "ei.quantity_auxiliary1 AS quantity_auxiliary1,"
+						 "ei.unity_auxiliary1 AS unity_auxiliary1,"
+						 
+						 "ei.auxiliary2 AS auxiliary2,"
+						 "ei.description_auxiliary2 AS description_auxiliary2,"
+						 "ei.designation_auxiliary2 AS designation_auxiliary2,"
+						 "ei.manufacturer_auxiliary2 AS manufacturer_auxiliary2,"
+						 "ei.manufacturer_reference_auxiliary2 AS manufacturer_reference_auxiliary2,"
+						 "ei.machine_manufacturer_reference_auxiliary2 AS machine_manufacturer_reference_auxiliary2,"
+						 "ei.supplier_auxiliary2 AS supplier_auxiliary2,"
+						 "ei.quantity_auxiliary2 AS quantity_auxiliary2,"
+						 "ei.unity_auxiliary2 AS unity_auxiliary2,"
+						 
+						 "ei.auxiliary3 AS auxiliary3,"
+						 "ei.description_auxiliary3 AS description_auxiliary3,"
+						 "ei.designation_auxiliary3 AS designation_auxiliary3,"
+						 "ei.manufacturer_auxiliary3 AS manufacturer_auxiliary3,"
+						 "ei.manufacturer_reference_auxiliary3 AS manufacturer_reference_auxiliary3,"
+						 "ei.machine_manufacturer_reference_auxiliary3 AS machine_manufacturer_reference_auxiliary3,"
+						 "ei.supplier_auxiliary3 AS supplier_auxiliary3,"
+						 "ei.quantity_auxiliary3 AS quantity_auxiliary3,"
+						 "ei.unity_auxiliary3 AS unity_auxiliary3,"
+						 
+						 "ei.auxiliary4 AS auxiliary4,"
+						 "ei.description_auxiliary4 AS description_auxiliary4,"
+						 "ei.designation_auxiliary4 AS designation_auxiliary4,"
+						 "ei.manufacturer_auxiliary4 AS manufacturer_auxiliary4,"
+						 "ei.manufacturer_reference_auxiliary4 AS manufacturer_reference_auxiliary4,"
+						 "ei.machine_manufacturer_reference_auxiliary4 AS machine_manufacturer_reference_auxiliary4,"
+						 "ei.supplier_auxiliary4 AS supplier_auxiliary4,"
+						 "ei.quantity_auxiliary4 AS quantity_auxiliary4,"
+						 "ei.unity_auxiliary4 AS unity_auxiliary4,"
+						 
+						
 						 "d.pos AS diagram_position,"
 						 "e.type AS element_type,"
 						 "e.sub_type AS element_sub_type,"
@@ -359,6 +398,14 @@ void projectDataBase::createElementNomenclatureView()
 	if (!query.exec(create_view)) {
 		qDebug() << query.lastError();
 	}
+	
+	QSqlQuery query_version{m_data_base};
+	query_version.exec("select sqlite_version();");
+	query_version.next();
+	QString version = query_version.value("sqlite_version()").toString();
+	query_version.finish();
+	
+	qInfo() << "SQLite version: " << version;
 }
 
 /**
@@ -411,8 +458,8 @@ void projectDataBase::populateElementTable()
 	for (auto diagram : m_project->diagrams())
 	{
 		const ElementProvider ep(diagram);
-		const auto elmt_vector = ep.find(ElementData::Simple | ElementData::Terminale | ElementData::Master | ElementData::Thumbnail);
-			//Insert all value into the database
+		const auto elmt_vector = ep.find(ElementData::Simple | ElementData::Terminal | ElementData::Master | ElementData::Thumbnail);
+			//Insert all values into the database
 		for (const auto &elmt : elmt_vector)
 		{
 			const auto elmt_data = elmt->elementData();
@@ -440,9 +487,9 @@ void projectDataBase::populateElementInfoTable()
 	for (const auto &diagram : m_project->diagrams())
 	{
 		const ElementProvider ep(diagram);
-		const auto elmt_vector = ep.find(ElementData::Simple | ElementData::Terminale | ElementData::Master | ElementData::Thumbnail);
+		const auto elmt_vector = ep.find(ElementData::Simple | ElementData::Terminal | ElementData::Master | ElementData::Thumbnail);
 
-			//Insert all value into the database
+			//Insert all values into the database
 		for (const auto &elmt : elmt_vector)
 		{
 			m_insert_element_info_query.bindValue(QStringLiteral(":uuid"), elmt->uuid().toString());
@@ -631,8 +678,7 @@ void projectDataBase::exportDb(projectDataBase *db,
 	if(dir_.isEmpty()) {
 		dir_ = db->project()->filePath();
 		if (dir_.isEmpty()) {
-			dir_ = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first();
-			dir_ += QString("/") += tr("sans_nom") += ".sqlite";
+			dir_ = QETApp::documentDir() + "/" + tr("sans_nom") + ".sqlite";
 		} else {
 			dir_.remove(".qet");
 			dir_.append(".sqlite");

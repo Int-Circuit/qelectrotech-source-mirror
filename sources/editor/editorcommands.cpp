@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -531,19 +531,36 @@ void RotateElementsCommand::undo()
 			PartRectangle* rect = qgraphicsitem_cast<PartRectangle*>(item);
 			rect->setRotation(rect->rotation()-90);
 		}
+		else if (item->type() == PartArc::Type) {
+			PartArc* arc = qgraphicsitem_cast<PartArc*>(item);
+			arc->setRotation(arc->rotation()-90);
+		}
+		else if (item->type() == PartEllipse::Type) {
+			PartEllipse* ellipse = qgraphicsitem_cast<PartEllipse*>(item);
+			ellipse->setRotation(ellipse->rotation()-90);
+		}
 		else if (item->type() == PartLine::Type) {
 			PartLine* line = qgraphicsitem_cast<PartLine*>(item);
-			line->setRotation(line->rotation()-15);
+			line->setRotation(line->rotation()-90);
 		}
 		else if (item->type() == PartPolygon::Type) {
 			PartPolygon* poly = qgraphicsitem_cast<PartPolygon*>(item);
-			poly->setRotation(poly->rotation()-15);
+			poly->setRotation(poly->rotation()-90);
+		}
+		else if (item->type() == PartText::Type) {
+			PartText* text = qgraphicsitem_cast<PartText*>(item);
+			text->setRotation(text->rotation()-90);
+		}
+		else if (item->type() == PartDynamicTextField::Type) {
+			PartDynamicTextField* dyntext = qgraphicsitem_cast<PartDynamicTextField*>(item);
+			dyntext->setRotation(dyntext->rotation()-90);
 		}
 		else {
-			item->setRotation(item->rotation()-15);
+			item->setRotation(item->rotation()-90);
 		}
 	}
 }
+
 /**
 	@brief RotateElementsCommand::redo
 */
@@ -559,17 +576,194 @@ void RotateElementsCommand::redo()
 			PartRectangle* rect = qgraphicsitem_cast<PartRectangle*>(item);
 			rect->setRotation(rect->rotation()+90);
 		}
+		else if (item->type() == PartArc::Type) {
+			PartArc* arc = qgraphicsitem_cast<PartArc*>(item);
+			arc->setRotation(arc->rotation()+90);
+		}
+		else if (item->type() == PartEllipse::Type) {
+			PartEllipse* ellipse = qgraphicsitem_cast<PartEllipse*>(item);
+			ellipse->setRotation(ellipse->rotation()+90);
+		}
 		else if (item->type() == PartLine::Type) {
 			PartLine* line = qgraphicsitem_cast<PartLine*>(item);
-			line->setRotation(line->rotation()+15);
+			line->setRotation(line->rotation()+90);
 		}
 		else if (item->type() == PartPolygon::Type) {
 			PartPolygon* poly = qgraphicsitem_cast<PartPolygon*>(item);
-			poly->setRotation(poly->rotation()+15);
+			poly->setRotation(poly->rotation()+90);
+		}
+		else if (item->type() == PartText::Type) {
+			PartText* text = qgraphicsitem_cast<PartText*>(item);
+			text->setRotation(text->rotation()+90);
+		}
+		else if (item->type() == PartDynamicTextField::Type) {
+			PartDynamicTextField* dyntext = qgraphicsitem_cast<PartDynamicTextField*>(item);
+			dyntext->setRotation(dyntext->rotation()+90);
 		}
 		else {
-			item->setRotation(item->rotation()+15);
+			item->setRotation(item->rotation()+90);
 		}
 	}
+}
 
+
+RotateFineElementsCommand::RotateFineElementsCommand(ElementScene *scene, QUndoCommand *parent) :
+ElementEditionCommand(QObject::tr("Pivoter la selection", "undo caption"), scene, nullptr, parent)
+{
+	m_items = scene->selectedItems();
+}
+
+/**
+	@brief RotateFineElementsCommand::undo
+*/
+void RotateFineElementsCommand::undo()
+{
+	for (QGraphicsItem *item : m_items)
+	{
+		if (item->type() == PartLine::Type) {
+			PartLine* line = qgraphicsitem_cast<PartLine*>(item);
+			line->setRotation(line->rotation()-5);
+		}
+		else if (item->type() == PartPolygon::Type) {
+			PartPolygon* poly = qgraphicsitem_cast<PartPolygon*>(item);
+			poly->setRotation(poly->rotation()-5);
+		}
+		else if (item->type() == PartText::Type) {
+			PartText* text = qgraphicsitem_cast<PartText*>(item);
+			text->setRotation(text->rotation()-5);
+		}
+		else if (item->type() == PartDynamicTextField::Type) {
+			PartDynamicTextField* dyntext = qgraphicsitem_cast<PartDynamicTextField*>(item);
+			dyntext->setRotation(dyntext->rotation()-5);
+		}
+		else {
+			//item->setRotation(item->rotation()-5);
+		}
+	}
+}
+
+/**
+	@brief RotateFineElementsCommand::redo
+*/
+void RotateFineElementsCommand::redo()
+{
+	for (QGraphicsItem *item : m_items)
+	{
+		if (item->type() == PartLine::Type) {
+			PartLine* line = qgraphicsitem_cast<PartLine*>(item);
+			line->setRotation(line->rotation()+5);
+		}
+		else if (item->type() == PartPolygon::Type) {
+			PartPolygon* poly = qgraphicsitem_cast<PartPolygon*>(item);
+			poly->setRotation(poly->rotation()+5);
+		}
+		else if (item->type() == PartText::Type) {
+			PartText* text = qgraphicsitem_cast<PartText*>(item);
+			text->setRotation(text->rotation()+5);
+		}
+		else if (item->type() == PartDynamicTextField::Type) {
+			PartDynamicTextField* dyntext = qgraphicsitem_cast<PartDynamicTextField*>(item);
+			dyntext->setRotation(dyntext->rotation()+5);
+		}
+		else {
+			//item->setRotation(item->rotation()+5);
+		}
+	}
+}
+
+
+MirrorElementsCommand::MirrorElementsCommand(ElementScene *scene, QUndoCommand *parent) :
+ElementEditionCommand(QObject::tr("Miroir de sélection", "undo caption"), scene, nullptr, parent)
+{
+	m_items = scene->selectedItems();
+}
+
+/**
+	@brief MirrorElementsCommand::redo
+*/
+void MirrorElementsCommand::redo()
+{
+	foreach (auto *item, m_items) {
+		if (item->type() == PartText::Type) {
+			PartText* staticText = qgraphicsitem_cast<PartText*>(item);
+			staticText->mirror();
+		} else if (item->type() == PartDynamicTextField::Type)  {
+			PartDynamicTextField* dyntext = qgraphicsitem_cast<PartDynamicTextField*>(item);
+			dyntext->mirror();
+		} else if (item->type() == PartArc::Type) {
+			PartArc* arc = qgraphicsitem_cast<PartArc*>(item);
+			arc->mirror();
+		} else if (item->type() == PartEllipse::Type) {
+			PartEllipse* ellipse = qgraphicsitem_cast<PartEllipse*>(item);
+			ellipse->mirror();
+		} else if (item->type() == PartLine::Type) {
+			PartLine* line = qgraphicsitem_cast<PartLine*>(item);
+			line->mirror();
+		} else if (item->type() == PartPolygon::Type) {
+			PartPolygon* poly = qgraphicsitem_cast<PartPolygon*>(item);
+			poly->mirror();
+		} else if (item->type() == PartRectangle::Type) {
+			PartRectangle* rect = qgraphicsitem_cast<PartRectangle*>(item);
+			rect->mirror();
+		} else if (item->type() == PartTerminal::Type) {
+			PartTerminal* term = qgraphicsitem_cast<PartTerminal*>(item);
+			term->mirror();
+		}
+	}
+}
+/**
+	@brief MirrorElementsCommand::undo
+*/
+void MirrorElementsCommand::undo()
+{
+	redo();
+}
+
+
+FlipElementsCommand::FlipElementsCommand(ElementScene *scene, QUndoCommand *parent) :
+ElementEditionCommand(QObject::tr("Retourner la sélection", "undo caption"), scene, nullptr, parent)
+{
+	m_items = scene->selectedItems();
+}
+
+/**
+	@brief FlipElementsCommand::redo
+*/
+void FlipElementsCommand::redo()
+{
+	foreach (auto *item, m_items) {
+		if (item->type() == PartText::Type) {
+			PartText* staticText = qgraphicsitem_cast<PartText*>(item);
+			staticText->flip();
+		} else if (item->type() == PartDynamicTextField::Type) {
+			PartDynamicTextField* dyntext = qgraphicsitem_cast<PartDynamicTextField*>(item);
+			dyntext->flip();
+		} else if (item->type() == PartArc::Type) {
+			PartArc* arc = qgraphicsitem_cast<PartArc*>(item);
+			arc->flip();
+		} else if (item->type() == PartEllipse::Type) {
+			PartEllipse* ellipse = qgraphicsitem_cast<PartEllipse*>(item);
+			ellipse->flip();
+		} else if (item->type() == PartLine::Type) {
+			PartLine* line = qgraphicsitem_cast<PartLine*>(item);
+			line->flip();
+		} else if (item->type() == PartPolygon::Type) {
+			PartPolygon* poly = qgraphicsitem_cast<PartPolygon*>(item);
+			poly->flip();
+		} else if (item->type() == PartRectangle::Type) {
+			PartRectangle* rect = qgraphicsitem_cast<PartRectangle*>(item);
+			rect->flip();
+		} else if (item->type() == PartTerminal::Type) {
+			PartTerminal* term = qgraphicsitem_cast<PartTerminal*>(item);
+			term->flip();
+		}
+	}
+}
+
+/**
+	@brief FlipElementsCommand::undo
+*/
+void FlipElementsCommand::undo()
+{
+	redo();
 }

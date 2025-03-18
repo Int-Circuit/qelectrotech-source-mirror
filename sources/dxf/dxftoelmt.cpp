@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -17,11 +17,11 @@
 */
 #include "dxftoelmt.h"
 #include "../ui/thirdpartybinaryinstalldialog.h"
+#include "../qetapp.h"
 
 #include <QFile>
 #include <QProcess>
 #include <QMessageBox>
-#include <QDir>
 
 /**
  * @brief dxftoElmt
@@ -43,12 +43,24 @@ QByteArray dxfToElmt(const QString &file_path)
 	const QStringList arguments{file_path, QStringLiteral("-v")};
 
 	process_.start(program, arguments);
-
+	
+	
 	if (process_.waitForFinished())
 	{
-		const auto byte_array{process_.readAll()};
-		process_.close();
-		return byte_array;
+		const auto byte_array{process_.readAllStandardOutput()};
+		const auto error_output{process_.readAllStandardError()};
+		
+			process_.close();
+			if (error_output.length() > 0) {
+			// inform the user about log-output via QMessageBox
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Critical);
+			msgBox.setText(QObject::tr("Dxf2elmt: \nError: Make sure the file %1 is a valid .dxf file").arg(file_path));
+			msgBox.setInformativeText (QObject::tr("See details here:"));
+			msgBox.setDetailedText(error_output);
+			msgBox.exec();
+		}
+			return byte_array;
 	}
 	else
 	{
@@ -59,13 +71,7 @@ QByteArray dxfToElmt(const QString &file_path)
 
 QString dxf2ElmtDirPath()
 {
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
-	return (QDir::homePath() + QStringLiteral("/Application Data/qet/binary"));
-#elif defined(Q_OS_MACOS)
-	return (QDir::homePath() + QStringLiteral("/.qet/binary"));
-#else
-	return (QDir::homePath() + QStringLiteral("/.qet/binary"));
-#endif
+	return QETApp::dataDir() + "/binary";
 }
 
 /**

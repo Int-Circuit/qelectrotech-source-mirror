@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -208,7 +208,7 @@ void AboutQETDialog::setLicence()
 */
 void AboutQETDialog::setLoginfo()
 {
-	const QString path = QETApp::configDir() + "/";
+	const QString path = QETApp::dataDir() + "/";
 	QString filter("%1%1%1%1%1%1%1%1.log"); // pattern
 	filter = filter.arg("[0123456789]"); // valid characters
 	Q_FOREACH (auto fileInfo,
@@ -218,6 +218,7 @@ void AboutQETDialog::setLoginfo()
 	{
 		ui->m_log_comboBox->addItem(fileInfo.absoluteFilePath());
 	}
+	ui->m_log_comboBox->setCurrentIndex(ui->m_log_comboBox->count() - 1);
 }
 
 /**
@@ -263,4 +264,5 @@ void AboutQETDialog::on_m_log_comboBox_currentTextChanged(const QString &arg1)
 		ui->m_log_textEdit->setPlainText(log_File.readAll());
 	}
 	log_File.close();
+	ui->m_log_textEdit->moveCursor(QTextCursor::End);
 }

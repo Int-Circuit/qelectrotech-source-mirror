@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -519,6 +519,10 @@ void ElementPictureFactory::parseText(const QDomElement &dom, QPainter &painter,
 	painter.rotate(dom.attribute("rotation", "0").toDouble());
 
 	/*
+		Moves the QPainter's coordinate system to render in the right place;
+		note: the font's ascent() is subtracted to determine the top left
+		corner of the text, whereas the position indicated corresponds
+		to the baseline.
 		Deplace le systeme de coordonnees du QPainter pour effectuer le rendu au
 		bon endroit ; note : on soustrait l'ascent() de la police pour
 		determiner le coin superieur gauche du texte alors que la position

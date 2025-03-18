@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -57,6 +57,7 @@ NewDiagramPage::NewDiagramPage(QETProject *project,
 	// default titleblock properties
 	QList <TitleBlockTemplatesCollection *> c;
 	c << QETApp::commonTitleBlockTemplatesCollection()
+	  << QETApp::companyTitleBlockTemplatesCollection()
 	  << QETApp::customTitleBlockTemplatesCollection();
 	if (m_project) c << m_project->embeddedTitleBlockTemplatesCollection();
 	ipw = new TitleBlockPropertiesWidget(

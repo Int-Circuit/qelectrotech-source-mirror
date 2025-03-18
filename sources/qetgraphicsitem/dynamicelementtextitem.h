@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -170,6 +170,7 @@ class DynamicElementTextItem : public DiagramTextItem
 		QPointF m_initial_position;
 		bool m_keep_visual_rotation = true;
 		qreal m_visual_rotation_ref = 0;
+		bool m_move_parent = true;
 };
 
 #endif // DYNAMICELEMENTTEXTITEM_H

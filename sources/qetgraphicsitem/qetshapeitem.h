@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -130,7 +130,7 @@ class QetShapeItem : public QetGraphicsItem
 	private:
 		void switchResizeMode();
 		void addHandler();
-		void adjusteHandlerPos();
+		void adjustHandlerPos();
 		void insertPoint();
 		void removePoint();
 		

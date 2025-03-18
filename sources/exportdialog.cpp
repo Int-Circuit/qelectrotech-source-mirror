@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -868,7 +868,22 @@ void ExportDialog::slot_changeFilesExtension(bool force_extension) {
 	// recupere le format a utiliser (acronyme et extension)
 	QString format_acronym = epw -> exportProperties().format;
 	QString format_extension = "." + format_acronym.toLower();
-	
+
+	// set maximum width / height according limitations in QPainter
+	if ((format_extension == ".bmp") ||
+	    (format_extension == ".jpg") ||
+	    (format_extension == ".png")) {
+		foreach (auto line, diagram_lines_.values() ) {
+			line->width ->setRange(1, RasterMaxSize);
+			line->height->setRange(1, RasterMaxSize);
+		}
+	} else {
+		foreach (auto line, diagram_lines_.values() ) {
+			line->width ->setRange(1, GeneralMaxSize);
+			line->height->setRange(1, GeneralMaxSize);
+		}
+	}
+
 	// parcourt les schemas a exporter
 	foreach(ExportDiagramLine *diagram_line, diagram_lines_.values()) {
 		QString diagram_filename = diagram_line -> file_name -> text();
@@ -1008,16 +1023,16 @@ ExportDialog::ExportDiagramLine::ExportDiagramLine(Diagram *dia, QSize diagram_s
 	file_name -> setMinimumWidth(280);
 	
 	width = new QSpinBox();
-	width -> setRange(1, 10000);
+	width -> setRange(1, GeneralMaxSize);
 	width -> setSuffix(tr("px"));
 	width -> setValue(diagram_size.width());
 	
 	height = new QSpinBox();
-	height -> setRange(1, 10000);
+	height -> setRange(1, GeneralMaxSize);
 	height -> setSuffix(tr("px"));
 	height -> setValue(diagram_size.height());
 	
-	x_label = new QLabel("*");
+	x_label = new QLabel("×");
 	
 	keep_ratio = new QPushButton();
 	keep_ratio -> setCheckable(true);

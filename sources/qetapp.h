@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -97,6 +97,9 @@ class QETApp : public QObject
 		static QETProject *project(const uint &);
 		static int projectId(const QETProject *);
 		static QString configDir();
+		static QString dataDir();
+		static QString documentDir();
+		static QString pictureDir();
 		static QString languagesPath();
 		static QString realPath(const QString &);
 		static QString symbolicPath(const QString &);
@@ -138,6 +141,18 @@ class QETApp : public QObject
 			and the custom elements collection
 		*/
 		static QString config_dir;
+#endif
+		
+#ifdef QET_ALLOW_OVERRIDE_DD_OPTION
+	public:
+		static void overrideDataDir(const QString &);
+	private:
+		/**
+			@brief data_dir
+			Directory containing the users data
+			and the custom elements collection
+		*/
+		static QString data_dir;
 #endif
 		
 	public:

@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -81,14 +81,7 @@ void PartLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *options,
 	QPen t = painter -> pen();
 	t.setJoinStyle(Qt::MiterJoin);
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)	// ### Qt 6: remove
-	t.setCosmetic(options && options -> levelOfDetail < 1.0);
-#else
-#if TODO_LIST
-#pragma message("@TODO remove code for QT 6 or later")
-#endif
 	t.setCosmetic(options && options -> levelOfDetailFromTransform(painter->worldTransform()) < 1.0);
-#endif
 	if (isSelected()) t.setColor(Qt::red);
 
 	painter -> setPen(t);
@@ -115,15 +108,22 @@ const QDomElement PartLine::toXml(QDomDocument &xml_document) const
 	QPointF p1(sceneP1());
 	QPointF p2(sceneP2());
 
+	p1.setX((qRound(p1.x() * 100.0)) / 100.0);
+	p1.setY((qRound(p1.y() * 100.0)) / 100.0);
+	p2.setX((qRound(p2.x() * 100.0)) / 100.0);
+	p2.setY((qRound(p2.y() * 100.0)) / 100.0);
+	qreal firstLength  = ((qRound(first_length  * 100.0)) / 100.0);
+	qreal secondLength = ((qRound(second_length * 100.0)) / 100.0);
+
 	QDomElement xml_element = xml_document.createElement("line");
 	xml_element.setAttribute("x1", QString("%1").arg(p1.x()));
 	xml_element.setAttribute("y1", QString("%1").arg(p1.y()));
 	xml_element.setAttribute("x2", QString("%1").arg(p2.x()));
 	xml_element.setAttribute("y2", QString("%1").arg(p2.y()));
 	xml_element.setAttribute("end1", Qet::endTypeToString(first_end));
-	xml_element.setAttribute("length1", QString("%1").arg(first_length));
+	xml_element.setAttribute("length1", QString("%1").arg(firstLength));
 	xml_element.setAttribute("end2", Qet::endTypeToString(second_end));
-	xml_element.setAttribute("length2", QString("%1").arg(second_length));
+	xml_element.setAttribute("length2", QString("%1").arg(secondLength));
 
 	stylesToXml(xml_element);
 	return(xml_element);
@@ -157,7 +157,7 @@ QVariant PartLine::itemChange(QGraphicsItem::GraphicsItemChange change, const QV
 {
 	if (change == ItemPositionHasChanged)
 	{
-		adjusteHandlerPos();
+		adjustHandlerPos();
 	}
 	else if (change == ItemSceneChange)
 	{
@@ -208,10 +208,10 @@ bool PartLine::sceneEventFilter(QGraphicsItem *watched, QEvent *event)
 }
 
 /**
-	@brief PartLine::adjusteHandlerPos
+	@brief PartLine::adjustHandlerPos
 	Adjust the position of the handler item
 */
-void PartLine::adjusteHandlerPos()
+void PartLine::adjustHandlerPos()
 {
 	if(m_handler_vector.isEmpty())
 		return;
@@ -265,7 +265,7 @@ void PartLine::handlerMouseMoveEvent(QetGraphicsHandlerItem *qghi, QGraphicsScen
 
 	emit lineChanged();
 
-	adjusteHandlerPos();
+	adjustHandlerPos();
 }
 
 /**
@@ -445,7 +445,7 @@ QRectF PartLine::boundingRect() const
 /**
 	@brief PartLine::isUseless
 	@return true if this part is irrelevant and does not deserve to be Retained / registered.
-	A line is relevant when is two point is different
+	A line is relevant when start-point and end-point are different
 */
 bool PartLine::isUseless() const
 {
@@ -533,7 +533,7 @@ void PartLine::setLine(const QLineF &line)
 	if (m_line == line) return;
 	prepareGeometryChange();
 	m_line = line;
-	adjusteHandlerPos();
+	adjustHandlerPos();
 	emit lineChanged();
 }
 
@@ -572,15 +572,48 @@ void PartLine::setSecondEndLength(const qreal &l)
 }
 
 void PartLine::setRotation(qreal angle) {
-
-	QTransform rotation = QTransform().translate(m_line.p1().x(),m_line.p1().y()).rotate(angle-m_rot).translate(-m_line.p1().x(),-m_line.p1().y());
-	m_rot=angle;
-
-	setLine(rotation.map(m_line));
+	qreal diffAngle = qRound((angle - rotation()) * 100.0) / 100.0;
+	m_rot = QET::correctAngle(angle, true);
+	auto p1 = mapToScene(m_line.p1());
+	auto p2 = mapToScene(m_line.p2());
+	p1 = QTransform().rotate(diffAngle).map(p1);
+	p2 = QTransform().rotate(diffAngle).map(p2);
+	m_line.setP1(mapFromScene(p1));
+	m_line.setP2(mapFromScene(p2));
+	prepareGeometryChange();
+	setLine(m_line);
+	adjustHandlerPos();
+	emit lineChanged();
 }
 
 qreal PartLine::rotation() const {
-	return m_rot;
+	return qRound(m_rot * 100.0) / 100.0;
+}
+
+void PartLine::flip() {
+	auto p1 = mapToScene(m_line.p1());
+	auto p2 = mapToScene(m_line.p2());
+	p1 = QPointF(p1.x(), (-1) * p1.y());
+	p2 = QPointF(p2.x(), (-1) * p2.y());
+	m_line.setP1(mapFromScene(p1));
+	m_line.setP2(mapFromScene(p2));
+	setLine(m_line);
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit lineChanged();
+}
+
+void PartLine::mirror() {
+	auto p1 = mapToScene(m_line.p1());
+	auto p2 = mapToScene(m_line.p2());
+	p1 = QPointF((-1) * p1.x(), p1.y());
+	p2 = QPointF((-1) * p2.x(), p2.y());
+	m_line.setP1(mapFromScene(p1));
+	m_line.setP2(mapFromScene(p2));
+	setLine(m_line);
+	prepareGeometryChange();
+	adjustHandlerPos();
+	emit lineChanged();
 }
 
 

@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -85,17 +85,19 @@ class PartLine : public CustomElementGraphicPart
 		static QList<QPointF> fourEndPoints(const QPointF &, const QPointF &, const qreal &);
 
 		QLineF line() const;
-		void setLine(const QLineF &line);
+		void  setLine(const QLineF &line);
 		Qet::EndType firstEndType() const {return first_end;}
-		void setFirstEndType(const Qet::EndType &et);
+		void  setFirstEndType(const Qet::EndType &et);
 		Qet::EndType secondEndType() const {return second_end;}
-		void setSecondEndType(const Qet::EndType &et);
+		void  setSecondEndType(const Qet::EndType &et);
 		qreal firstEndLength() const {return first_length;}
-		void setFirstEndLength(const qreal &l);
+		void  setFirstEndLength(const qreal &l);
 		qreal secondEndLength() const {return second_length;}
-		void setSecondEndLength(const qreal &l);
-		void setRotation(qreal angle);
+		void  setSecondEndLength(const qreal &l);
+		void  setRotation(qreal angle);
 		qreal rotation() const;
+		void  flip();
+		void  mirror();
 
 		void addHandler() override;
 		void removeHandler() override;
@@ -105,7 +107,7 @@ class PartLine : public CustomElementGraphicPart
 		bool sceneEventFilter(QGraphicsItem *watched, QEvent *event) override;
 		
 	private:
-		void adjusteHandlerPos();
+		void adjustHandlerPos();
 		void handlerMousePressEvent   (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
 		void handlerMouseMoveEvent    (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
 		void handlerMouseReleaseEvent (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);

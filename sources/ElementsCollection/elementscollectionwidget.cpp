@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -529,7 +529,7 @@ void ElementsCollectionWidget::newElement()
 	elmt_wizard.exec();
 
 	foreach (QETElementEditor *element_editor,
-		 QETApp::instance()->elementEditors())
+			 QETApp::instance()->elementEditors())
 		connect(element_editor,
 			&QETElementEditor::saveToLocation,
 			this,
@@ -713,7 +713,7 @@ void ElementsCollectionWidget::locationWasSaved(
 		const ElementsLocation& location)
 {
 	//Because this method update an item in the model, location must
-	//represente an existing element (in file system of project)
+	//represent an existing element (in file system of project)
 	if (!location.exist())
 		return;
 

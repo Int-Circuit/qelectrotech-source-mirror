@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -129,7 +129,7 @@ void QetGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		QPointF expected_pos = event->scenePos() + m_mouse_to_origin_movement;
 		setPos(expected_pos); // setPos() will snap the expected position to the grid
 
-			//we calcul the real movement apply by setPos()
+			//we calculate the real movement applied by setPos()
 		QPointF effective_movement = pos() - old_pos;
 		if (diagram()) {
 				//we signal the real movement apply to diagram,

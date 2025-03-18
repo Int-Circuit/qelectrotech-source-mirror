@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -32,6 +32,10 @@
 	en orientation. Si la chaine fait plusieurs caracteres, seul le
 	premier est pris en compte. En cas d'incoherence, Qet::North est
 	retourne.
+	Used to convert a string of characters (‘n’, ‘s’, ‘e’ or ‘w’)
+	into orientation. If the string is made up of several characters,
+	only the only the first is taken into account. In the event of an
+	inconsistency, Qet::North is returned.
 	@param s Chaine de caractere cense representer une orientation
 	@return l'orientation designee par la chaine de caractere
 */
@@ -60,6 +64,7 @@ QString Qet::orientationToString(Qet::Orientation o) {
 
 /**
 	Indique si deux orientations de Borne sont sur le meme axe (Vertical / Horizontal).
+	Indicates whether two terminal orientations are on the same axis (Vertical / Horizontal).
 	@param a La premiere orientation de Borne
 	@param b La seconde orientation de Borne
 	@return Un booleen a true si les deux orientations de bornes sont sur le meme axe
@@ -576,8 +581,11 @@ qreal QET::round(qreal x, qreal epsilon) {
 }
 
 /**
-	@param angle Un angle quelconque
+	@param angle Un angle quelconque / any angle in degrees
+	@param positive (bool)
 	@return l'angle passe en parametre, mais ramene entre -360.0 + 360.0 degres
+	the angle passed as a parameter, but reduced to between -360.0 +360.0 degrees
+	reduced to 0.0 .. 360.0, when bool-parameter is true
 */
 qreal QET::correctAngle(const qreal &angle, const bool &positive) {
 	// ramene l'angle demande entre -360.0 et +360.0 degres
@@ -738,10 +746,10 @@ QActionGroup *QET::depthActionGroup(QObject *parent)
 	edit_lower   ->setStatusTip(QObject::tr("Éloigne la ou les sélections"));
 	edit_backward->setStatusTip(QObject::tr("Envoie en arrière plan la ou les sélections"));
 
-	edit_raise   ->setShortcut(QKeySequence(QObject::tr("Ctrl+Shift+Up")));
-	edit_lower   ->setShortcut(QKeySequence(QObject::tr("Ctrl+Shift+Down")));
-	edit_backward->setShortcut(QKeySequence(QObject::tr("Ctrl+Shift+End")));
-	edit_forward ->setShortcut(QKeySequence(QObject::tr("Ctrl+Shift+Home")));
+	edit_raise   ->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_Up);
+	edit_lower   ->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_Down);
+	edit_backward->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_End);
+	edit_forward ->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_Home);
 
 	edit_forward ->setData(QET::BringForward);
 	edit_raise   ->setData(QET::Raise);

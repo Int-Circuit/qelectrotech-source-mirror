@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -26,7 +26,11 @@
 #include "xmlprojectelementcollectionitem.h"
 
 #include <QFutureWatcher>
-#include <QtConcurrent>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) // ### Qt 6: remove
+#include <QtConcurrentMap>
+#else
+#include <QtConcurrentRun>
+#endif
 
 /**
 	@brief ElementsCollectionModel::ElementsCollectionModel

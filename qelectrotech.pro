@@ -57,6 +57,9 @@ DEFINES += QET_ALLOW_OVERRIDE_CTBTD_OPTION
 # Commenter la ligne ci-dessous pour desactiver l'option --config-dir
 DEFINES += QET_ALLOW_OVERRIDE_CD_OPTION
 
+# Commenter la ligne ci-dessous pour desactiver l'option --data-dir
+DEFINES += QET_ALLOW_OVERRIDE_DD_OPTION
+
 #comment the line below to disable the project database export
 DEFINES += QET_EXPORT_PROJECT_DB
 
@@ -281,7 +284,7 @@ mime_package.path  = $$join(INSTALL_PREFIX,,,$${QET_MIME_PACKAGE_PATH})
 mime_package.files = misc/qelectrotech.xml
 
 desktop.path       = $$join(INSTALL_PREFIX,,,$${QET_DESKTOP_PATH})
-desktop.files      = misc/qelectrotech.desktop
+desktop.files      = misc/org.qelectrotech.qelectrotech.desktop
 
 appdata.path       = $$join(INSTALL_PREFIX,,,$${QET_APPDATA_PATH})
 appdata.files      = misc/qelectrotech.appdata.xml

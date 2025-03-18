@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -107,6 +107,9 @@ void QETElementEditor::contextMenu(QPoint p, QList<QAction *> actions)
 	menu.addAction(ui->m_delete_action);
 	menu.addAction(ui->m_cut_action);
 	menu.addAction(ui->m_copy_action);
+	menu.addSeparator();
+	menu.addAction((ui->m_mirror_action));
+	menu.addAction((ui->m_flip_action));
 	menu.addAction((ui->m_rotate_action));
 	menu.addSeparator();
 	menu.addAction(ui->m_paste_action);
@@ -951,39 +954,6 @@ void QETElementEditor::writeSettings() const
  */
 void QETElementEditor::setupActions()
 {
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
-	ui->m_open_dxf_action -> setStatusTip(tr("To install the plugin DXFtoQET\nVisit https://download.qelectrotech.org/qet/builds/dxf_to_elmt/\n"
-					 "\n"
-					 ">> Install on Windows\n"
-					 "Put DXFtoQET.exe binary on C:\\Users\\user_name\\AppData\\Roaming\\qet\\ directory \n"
-					   ));
-#elif defined(Q_OS_MAC)
-	ui->m_open_dxf_action -> setStatusTip(tr("To install the plugin DXFtoQET\nVisit https://download.qelectrotech.org/qet/builds/dxf_to_elmt/\n"
-					 "\n"
-					 ">> Install on macOSX\n"
-					 "Put DXFtoQET.app binary on /Users/user_name/.qet/ directory \n"
-					  ));
-#else
-	ui->m_open_dxf_action -> setStatusTip(tr("To install the plugin DXFtoQET\nVisit https://download.qelectrotech.org/qet/builds/dxf_to_elmt/\n"
-					 "\n"
-					 ">> Install on Linux\n"
-					 "Put DXFtoQET binary on your /home/user_name/.qet/ directory\n"
-					 "make it executable : chmod +x ./DXFtoQET\n"
-					  ));
-#endif
-
-	ui->m_open_dxf_action -> setWhatsThis (tr("To install the plugin DXFtoQET\nVisit https://download.qelectrotech.org/qet/builds/dxf_to_elmt/\n"
-					 "\n"
-					 ">> Install on Linux\n"
-					 "Put DXFtoQET binary on your /home/user_name/.qet/ directory\n"
-					 "make it executable : chmod +x ./DXFtoQET\n"
-					 ">> Install on Windows\n"
-					 "Put DXFtoQET.exe binary on C:\\Users\\user_name\\AppData\\Roaming\\qet\\ directory \n"
-					 "\n"
-					 ">> Install on macOSX\n"
-					 "Put DXFtoQET.app binary on /Users/user_name/.qet/ directory \n"
-					  ));
-
 	m_undo_action = m_elmt_scene -> undoStack().createUndoAction(this, tr("Annuler"));
 	m_redo_action = m_elmt_scene -> undoStack().createRedoAction(this, tr("Refaire"));
 	m_undo_action -> setIcon(QET::Icons::EditUndo);
@@ -995,25 +965,25 @@ void QETElementEditor::setupActions()
 
 	ui->m_new_action              -> setShortcut(QKeySequence::New);
 	ui->m_open_action             -> setShortcut(QKeySequence::Open);
-	ui->m_open_from_file_action   -> setShortcut(tr("Ctrl+Shift+O"));
+	ui->m_open_from_file_action   -> setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_O);
 	ui->m_save_action             -> setShortcut(QKeySequence::Save);
-	ui->m_save_as_file_action     -> setShortcut(tr("Ctrl+Shift+S"));
+	ui->m_save_as_file_action     -> setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_S);
 	ui->m_select_all_act          -> setShortcut(QKeySequence::SelectAll);
-	ui->m_deselect_all_action     -> setShortcut(QKeySequence(tr("Ctrl+Shift+A")));
-	ui->m_revert_selection_action -> setShortcut(QKeySequence(tr("Ctrl+I")));
+	ui->m_deselect_all_action     -> setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_A);
+	ui->m_revert_selection_action -> setShortcut(Qt::CTRL | Qt::Key_I);
 	ui->m_cut_action              -> setShortcut(QKeySequence::Cut);
 	ui->m_copy_action             -> setShortcut(QKeySequence::Copy);
 	ui->m_paste_action            -> setShortcut(QKeySequence::Paste);
-	ui->m_paste_in_area_action    -> setShortcut(tr("Ctrl+Shift+V"));
-	ui->m_edit_names_action       -> setShortcut(QKeySequence(tr("Ctrl+E")));
-	ui->m_edit_author_action      -> setShortcut(tr("Ctrl+Y"));
+	ui->m_paste_in_area_action    -> setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_V);
+	ui->m_edit_names_action       -> setShortcut(Qt::CTRL | Qt::Key_E);
+	ui->m_edit_author_action      -> setShortcut(Qt::CTRL | Qt::Key_Y);
 
-#ifndef Q_OS_MAC
-	ui->m_delete_action -> setShortcut(QKeySequence(Qt::Key_Delete));
-	ui->m_quit_action -> setShortcut(QKeySequence(tr("Ctrl+Q")));
+#ifdef Q_OS_MAC
+	ui->m_delete_action -> setShortcut(Qt::Key_Backspace);
+	ui->m_quit_action -> setShortcut(Qt::CTRL | Qt::Key_W);
 #else
-	ui->m_delete_action -> setShortcut(QKeySequence(tr("Backspace")));
-	ui->m_quit_action -> setShortcut(QKeySequence(tr("Ctrl+W")));
+	ui->m_delete_action -> setShortcut(Qt::Key_Delete);
+	ui->m_quit_action -> setShortcut(Qt::CTRL | Qt::Key_Q);
 #endif
 
 		//Depth action
@@ -1029,13 +999,27 @@ void QETElementEditor::setupActions()
 	addToolBar(Qt::TopToolBarArea, depth_toolbar);
 
 		//Rotate action
+	ui->m_rotate_action -> setShortcut(Qt::Key_Space);
 	connect(ui->m_rotate_action, &QAction::triggered, [this]() {this -> elementScene() -> undoStack().push(new RotateElementsCommand(this->elementScene()));});
+
+		//Rotate Fine action = rotate with smaller inkrement
+	ui->m_rotateFine_action -> setShortcut(Qt::CTRL | Qt::Key_Space);
+	connect(ui->m_rotateFine_action, &QAction::triggered, [this]() {this -> elementScene() -> undoStack().push(new RotateFineElementsCommand(this->elementScene()));});
+
+		//Flip action
+	ui->m_flip_action -> setShortcut(Qt::Key_F);
+	connect(ui->m_flip_action, &QAction::triggered, [this]() {this -> elementScene() -> undoStack().push(new FlipElementsCommand(this->elementScene()));});
+
+		//Mirror action
+	ui->m_mirror_action -> setShortcut(Qt::Key_M);
+	connect(ui->m_mirror_action, &QAction::triggered, [this]() {this -> elementScene() -> undoStack().push(new MirrorElementsCommand(this->elementScene()));});
+
 
 		//Zoom action
 	ui->m_zoom_in_action       -> setShortcut(QKeySequence::ZoomIn);
 	ui->m_zoom_out_action      -> setShortcut(QKeySequence::ZoomOut);
-	ui->m_zoom_fit_best_action -> setShortcut(QKeySequence(tr("Ctrl+9")));
-	ui->m_zoom_original_action -> setShortcut(QKeySequence(tr("Ctrl+0")));
+	ui->m_zoom_fit_best_action -> setShortcut(Qt::CTRL | Qt::Key_9);
+	ui->m_zoom_original_action -> setShortcut(Qt::CTRL | Qt::Key_0);
 
 		//Add primitive actions
 	m_add_part_action_grp = new QActionGroup(this);
@@ -1095,7 +1079,10 @@ void QETElementEditor::updateAction()
 				<< ui->m_cut_action
 				<< ui->m_copy_action
 				<< ui->m_delete_action
-				<< ui->m_rotate_action;
+				<< ui->m_rotate_action
+				<< ui->m_rotateFine_action
+				<< ui->m_flip_action
+				<< ui->m_mirror_action;
 	auto items_selected = !m_read_only && m_elmt_scene->selectedItems().count();
 	for (auto action : qAsConst(select_list)) {
 		action->setEnabled(items_selected);
@@ -1315,42 +1302,6 @@ void QETElementEditor::on_m_open_from_file_action_triggered()
 	openElement(user_filename);
 }
 
-void QETElementEditor::on_m_open_dxf_action_triggered()
-{
-#ifdef TODO_LIST
-#	pragma message("@TODO Merge 'DXF to GET-2020' code in to Qet")
-#	pragma message("https://github.com/qelectrotech/DXFtoQET-2020")
-#endif
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
-	QString program = (QDir::homePath() + "/Application Data/qet/DXFtoQET.exe");
-#elif defined(Q_OS_MAC)
-	QString program = (QDir::homePath() + "/.qet/DXFtoQET.app");
-#else
-	QString program = (QDir::homePath() + "/.qet/DXFtoQET");
-#endif
-	QStringList arguments;
-	QProcess *DXF = new QProcess(qApp);
-	DXF -> start(program,arguments);
-}
-
-void QETElementEditor::on_m_open_scaled_element_action_triggered()
-{
-#ifdef TODO_LIST
-#	pragma message("@TODO Merge 'Element-Scaling' code into QET")
-#	pragma message("https://github.com/plc-user/QET_ElementScaler")
-#endif
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
-	QString program = (QDir::homePath() + "/Application Data/qet/QET_ElementScaler.exe");
-#elif defined(Q_OS_MAC)
-	QString program = (QDir::homePath() + "/.qet/QET_ElementScaler.app");
-#else
-	QString program = (QDir::homePath() + "/.qet/QET_ElementScaler");
-#endif
-	QStringList arguments;
-	QProcess *ES = new QProcess(qApp);
-	ES -> start(program,arguments);
-}
-
 bool QETElementEditor::on_m_save_as_file_action_triggered()
 {
 	// Check element before writing
@@ -1523,7 +1474,7 @@ void QETElementEditor::on_m_import_dxf_triggered()
 	{
 		QString file_path{QFileDialog::getOpenFileName(this,
 													   QObject::tr("Importer un fichier dxf"),
-													   QDir::homePath(),
+													   QETApp::documentDir(),
 													   "DXF (*.dxf)")};
 		if (file_path.isEmpty()) {
 			return;
@@ -1549,7 +1500,7 @@ void QETElementEditor::on_m_import_scaled_element_triggered()
 	{
 		QString file_path{QFileDialog::getOpenFileName(this,
 													   tr("Importer un élément à redimensionner"),
-													   QDir::homePath(),
+													   QETApp::documentDir(),
 													   tr("Éléments QElectroTech (*.elmt)"))};
 		if (file_path.isEmpty()) {
 			return;

@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -204,7 +204,7 @@ QVector<TerminalElement *> ElementProvider::freeTerminal() const
 
 		for (const auto element : elmt_list)
 		{
-			if (element->elementData().m_type == ElementData::Terminale)
+			if (element->elementData().m_type == ElementData::Terminal)
 			{
 				const auto te{static_cast<TerminalElement *>(element)};
 				if (!te->parentTerminalStrip()) {

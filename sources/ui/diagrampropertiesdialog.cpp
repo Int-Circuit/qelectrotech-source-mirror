@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -57,7 +57,7 @@ DiagramPropertiesDialog::DiagramPropertiesDialog(Diagram *diagram, QWidget *pare
 	TitleBlockPropertiesWidget  *titleblock_infos;
 
 	if (QETProject *parent_project = diagram -> project())
-		titleblock_infos  = new TitleBlockPropertiesWidget(parent_project -> embeddedTitleBlockTemplatesCollection(), titleblock, false, diagram->project(),  this);
+		titleblock_infos = new TitleBlockPropertiesWidget(parent_project -> embeddedTitleBlockTemplatesCollection(), titleblock, false, diagram->project(), this);
 	else
 		titleblock_infos = new TitleBlockPropertiesWidget(titleblock, false, diagram->project(), this);
 

@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class QetGraphicsHandlerItem;
 	drawing of an electrical element within the element editor.
 	All coordinates is in item coordinate, except pos()
 */
-class PartRectangle :  public CustomElementGraphicPart
+class PartRectangle : public CustomElementGraphicPart
 {
 		Q_OBJECT
 
@@ -67,12 +67,14 @@ class PartRectangle :  public CustomElementGraphicPart
 
 		QRectF rect() const;
 		void   setRect(const QRectF &rect);
-		qreal XRadius() const {return m_xRadius;}
-		void setXRadius(qreal X);
-		qreal YRadius() const {return m_yRadius;}
-		void setYRadius(qreal Y);
-		void setRotation(qreal angle);
-		qreal rotation() const;
+		qreal  XRadius() const {return m_xRadius;}
+		void   setXRadius(qreal X);
+		qreal  YRadius() const {return m_yRadius;}
+		void   setYRadius(qreal Y);
+		void   setRotation(qreal angle);
+		qreal  rotation() const;
+		void   flip();
+		void   mirror();
 
 		QRectF  sceneGeometricRect() const override;
 		virtual QPointF sceneTopLeft() const;
@@ -95,7 +97,7 @@ class PartRectangle :  public CustomElementGraphicPart
 
 	private:
 		void switchResizeMode();
-		void adjusteHandlerPos();
+		void adjustHandlerPos();
 		void handlerMousePressEvent   (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
 		void handlerMouseMoveEvent    (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);
 		void handlerMouseReleaseEvent (QetGraphicsHandlerItem *qghi, QGraphicsSceneMouseEvent *event);

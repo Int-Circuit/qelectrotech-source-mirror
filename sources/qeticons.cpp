@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -92,6 +92,7 @@ namespace QET {
 		QIcon EndLineSimple;
 		QIcon EndLineTriangle;
 		QIcon EPS;
+		QIcon Flip;
 		QIcon Folder;
 		QIcon FolderDelete;
 		QIcon FolderEdit;
@@ -117,6 +118,7 @@ namespace QET {
 		QIcon InsertImage;
 		QIcon Lower;
 		QIcon IC_MoveFile;
+		QIcon Mirror;
 		QIcon Names;
 		QIcon Neutral;
 		QIcon NewDiagram;
@@ -203,11 +205,12 @@ namespace QET {
 		QIcon sl;
 		QIcon nl;
 		QIcon no;
-		QIcon be;
+		QIcon nl_BE;
 		QIcon tr;
 		QIcon uk;
 		QIcon mn;
 		QIcon zh;
+		QIcon se;
 		QIcon translation;
 		QIcon listDrawings;
 		QIcon AutoNum;
@@ -517,6 +520,7 @@ void QET::Icons::initIcons()
 	EndLineSimple       .addFile(":/ico/16x16/endline-simple.png");
 	EndLineTriangle     .addFile(":/ico/16x16/endline-triangle.png");
 	EPS                 .addFile(":/ico/32x32/image-x-eps.png");
+	Flip                .addFile(":/ico/16x16/flip.png");
 	Folder              .addFile(":/ico/16x16/folder.png");
 	FolderDelete        .addFile(":/ico/16x16/folder-delete.png");
 	FolderDelete        .addFile(":/ico/22x22/folder-delete.png");
@@ -552,6 +556,7 @@ void QET::Icons::initIcons()
 	InsertImage         .addFile(":/ico/22x22/insert-image.png");
 	Lower               .addFile(":/ico/22x22/lower.png");
 	IC_MoveFile         .addFile(":/ico/16x16/item-move.png");
+	Mirror              .addFile(":/ico/16x16/mirror.png");
 	Names               .addFile(":/ico/22x22/names.png");
 	Neutral             .addFile(":/ico/16x16/neutral.png");
 	NewDiagram          .addFile(":/ico/128x128/diagram.png");
@@ -674,11 +679,12 @@ void QET::Icons::initIcons()
 	sl                  .addFile(":/ico/24x16/sl.png");
 	nl                  .addFile(":/ico/24x16/nl.png");
 	no                  .addFile(":/ico/24x16/no.png");
-	be                  .addFile(":/ico/24x16/be.png");
+	nl_BE               .addFile(":/ico/24x16/nl_BE.png");
 	tr                  .addFile(":/ico/24x16/tr.png");
 	uk                  .addFile(":/ico/24x16/ua.png");
 	mn                  .addFile(":/ico/24x16/mn.png");
 	zh                  .addFile(":/ico/24x16/zh.png");
+	se                  .addFile(":/ico/24x16/se.png");
 	translation         .addFile(":/ico/22x22/applications-development-translation.png");
 	listDrawings        .addFile(":/ico/48x48/view-pim-journal.png");
 	AutoNum             .addFile(":/ico/128x128/plasmagik.png");

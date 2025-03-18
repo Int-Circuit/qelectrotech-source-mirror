@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -120,7 +120,7 @@ void ElementPrimitiveDecorator::setItems(const QList<CustomElementPart *> &items
 	if (focusItem() != this) {
 		setFocus();
 	}
-	adjusteHandlerPos();
+	adjustHandlerPos();
 }
 
 /**
@@ -356,7 +356,7 @@ void ElementPrimitiveDecorator::adjustEffectiveBoundingRect()
 	prepareGeometryChange();
 	effective_bounding_rect_ = modified_bounding_rect_ | effective_bounding_rect_;
 	update();
-	adjusteHandlerPos();
+	adjustHandlerPos();
 }
 
 /**
@@ -492,9 +492,9 @@ QVector<QPointF> ElementPrimitiveDecorator::getResizingsPoints() const
 }
 
 /**
-	@brief ElementPrimitiveDecorator::adjusteHandlerPos
+	@brief ElementPrimitiveDecorator::adjustHandlerPos
 */
-void ElementPrimitiveDecorator::adjusteHandlerPos()
+void ElementPrimitiveDecorator::adjustHandlerPos()
 {
 	QVector <QPointF> points_vector = mapToScene(getResizingsPoints());
 	for (int i = 0 ; i < points_vector.size() ; ++i)

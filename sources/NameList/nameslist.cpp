@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ NamesList::~NamesList()
 void NamesList::addName(const QString &lang, const QString &name) {
 	if ((lang.length() != 2) && (lang.length() != 5)) return;
 	if ((lang.length() == 5) && (lang[2] != '_')) return;
-	hash_names.insert(lang, name);
+	map_names.insert(lang, name);
 }
 
 /**
@@ -54,7 +54,7 @@ void NamesList::addName(const QString &lang, const QString &name) {
 	@param lang la langue pour laquelle il faut supprimer le nom
 */
 void NamesList::removeName(const QString &lang) {
-	hash_names.remove(lang);
+	map_names.remove(lang);
 }
 
 /**
@@ -62,7 +62,7 @@ void NamesList::removeName(const QString &lang) {
 */
 void NamesList::clearNames()
 {
-	hash_names.clear();
+	map_names.clear();
 }
 
 /**
@@ -70,7 +70,7 @@ void NamesList::clearNames()
 */
 QList<QString> NamesList::langs() const
 {
-	return(hash_names.keys());
+	return(map_names.keys());
 }
 
 /**
@@ -78,7 +78,7 @@ QList<QString> NamesList::langs() const
 */
 bool NamesList::isEmpty() const
 {
-	return(hash_names.isEmpty());
+	return(map_names.isEmpty());
 }
 
 /**
@@ -86,7 +86,7 @@ bool NamesList::isEmpty() const
 */
 int NamesList::count() const
 {
-	return(hash_names.count());
+	return(map_names.count());
 }
 
 /**
@@ -95,7 +95,7 @@ int NamesList::count() const
 	defini
 */
 QString &NamesList::operator[](const QString &lang) {
-	return(hash_names[lang]);
+	return(map_names[lang]);
 }
 
 /**
@@ -105,17 +105,21 @@ QString &NamesList::operator[](const QString &lang) {
 */
 const QString NamesList::operator[](const QString &lang) const
 {
-	return(hash_names.value(lang));
+	return(map_names.value(lang));
 }
 
 
 
 /**
+	Loads the list of names from an XML element. This element is assumed to be
+	the parent of a ‘names’ element, which itself contains the ‘names’. The
+	names previously contained in the list are not deleted, but can be overwritten.
+	French:
 	Charge la liste de noms depuis un element XML. Cet element est sense etre
 	le parent d'un element "names", qui contient lui meme les "name".
 	Les noms precedemment contenus dans la liste ne sont pas effaces mais
 	peuvent etre ecrases.
-	@param xml_element L'element XML a analyser
+	@param xml_element L'element XML a analyser / The XML element to be parsed
 	@param xml_options A set of options related to XML parsing.
 	@see getXmlOptions()
 */
@@ -168,8 +172,13 @@ void NamesList::fromXml(const pugi::xml_node &xml_element, const QHash<QString, 
 }
 
 /**
+	Exports the list of names to an XML element.
+	Make sure that the list of names is not empty before exporting.
+	If list is empty, set name to "en" / "NoName"
+	French:
 	Exporte la liste des noms vers un element XML. Veillez a verifier que la
 	liste de noms n'est pas vide avant de l'exporter.
+	Si la liste est vide, le nom sera "en" / "NoName".
 	@param xml_document Le document XML dans lequel l'element XML sera insere
 	@param xml_options A set of options related to XML parsing.
 	@return L'element XML correspondant a la section "names"
@@ -179,13 +188,21 @@ QDomElement NamesList::toXml(QDomDocument &xml_document, const QHash<QString, QS
 {
 	QHash<QString, QString> xml_opt = getXmlOptions(xml_options);
 	QDomElement names_elmt = xml_document.createElement(xml_opt["ParentTagName"]);
-	QHashIterator<QString, QString> names_iterator(hash_names);
-	while (names_iterator.hasNext()) {
-		names_iterator.next();
+	if (map_names.isEmpty()) {
+		qInfo() << " NamesList of element is empty - add default: [" << "en" << "] = " << "NoName" << "";
 		QDomElement name_elmt = xml_document.createElement(xml_opt["TagName"]);
-		name_elmt.setAttribute(xml_opt["LanguageAttribute"], names_iterator.key());
-		name_elmt.appendChild(xml_document.createTextNode(names_iterator.value()));
+		name_elmt.setAttribute(xml_opt["LanguageAttribute"], "en");
+		name_elmt.appendChild(xml_document.createTextNode("NoName"));
 		names_elmt.appendChild(name_elmt);
+	} else {
+		QMapIterator<QString, QString> names_iterator(map_names);
+		while (names_iterator.hasNext()) {
+			names_iterator.next();
+			QDomElement name_elmt = xml_document.createElement(xml_opt["TagName"]);
+			name_elmt.setAttribute(xml_opt["LanguageAttribute"], names_iterator.key());
+			name_elmt.appendChild(xml_document.createTextNode(names_iterator.value().trimmed()));
+			names_elmt.appendChild(name_elmt);
+		}
 	}
 	return(names_elmt);
 }
@@ -218,7 +235,7 @@ QHash<QString, QString> NamesList::getXmlOptions(const QHash<QString, QString> &
 */
 bool NamesList::operator!=(const NamesList &nl) const
 {
-	return(hash_names != nl.hash_names);
+	return(map_names != nl.map_names);
 }
 
 /**
@@ -227,7 +244,7 @@ bool NamesList::operator!=(const NamesList &nl) const
 */
 bool NamesList::operator==(const NamesList &nl) const
 {
-	return(hash_names == nl.hash_names);
+	return(map_names == nl.map_names);
 }
 
 /**
@@ -246,10 +263,10 @@ bool NamesList::operator==(const NamesList &nl) const
 QString NamesList::name(const QString &fallback_name) const
 {
 	QString system_language = QETApp::langFromSetting();
-	if (! hash_names[system_language].isEmpty())
-		return (hash_names[system_language]);
-	if (! hash_names["en"].isEmpty()) return (hash_names["en"]);
+	if (! map_names[system_language].isEmpty())
+		return (map_names[system_language]);
+	if (! map_names["en"].isEmpty()) return (map_names["en"]);
 	if (! fallback_name.isEmpty()) return (fallback_name);
-	if (hash_names.count()) return (hash_names.begin().value());
+	if (map_names.count()) return (map_names.begin().value());
 	return (QString(""));
 }

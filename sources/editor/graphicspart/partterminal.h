@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2024 The QElectroTech Team
+	Copyright 2006-2025 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -74,8 +74,10 @@ class PartTerminal : public CustomElementGraphicPart
 		Qet::Orientation orientation() const {return d -> m_orientation;}
 		void setOrientation(Qet::Orientation ori);
 
+		void  setRotation(qreal angle);
 		qreal rotation() const;
-		void setRotation(qreal angle);
+		void  flip();
+		void  mirror();
 
 
 		QString terminalName() const { return d -> m_name; }
