@@ -14,6 +14,9 @@ jobs:
   doxygen:
     permissions:
        contents: write  
+  
+jobs:  
+  doxygen:
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
@@ -34,11 +37,11 @@ jobs:
           git add .gitattributes ${{ github.workspace }}/doc/QElectroTech.qch -f
           git commit -m "Push updated QCH file"
           git push
+    - name: Run doxygen
+      run: doxygen Doxyfile
     - uses: actions/upload-pages-artifact@v3
       with: 
        path: ${{ github.workspace }}/doc/html/
-    
-                    
   deploy:
     # Add a dependency to the build job
     needs: doxygen
