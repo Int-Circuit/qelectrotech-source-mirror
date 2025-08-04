@@ -27,7 +27,17 @@ jobs:
       with: 
        path: ${{ github.workspace }}/doc/html/
     
-    
+  sync:
+    needs: doxygen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          show-progress: ''
+      - uses: actions/download-artifact@v4
+        with:
+          name: qch-artifact      
   deploy:
     # Add a dependency to the build job
     needs: doxygen
