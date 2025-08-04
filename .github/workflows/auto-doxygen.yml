@@ -36,6 +36,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: qch-artifact
+      - run: ls -R
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
