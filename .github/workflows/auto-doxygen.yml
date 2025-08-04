@@ -5,7 +5,10 @@ on:
       - master
       #! only for test, remove before MR !
       - doxygen
-      - automr
+  pull_request:
+    branches:
+      - main
+      - doxygen       
   
 jobs:  
   doxygen:
