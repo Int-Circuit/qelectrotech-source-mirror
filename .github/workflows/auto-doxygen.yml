@@ -37,6 +37,7 @@ jobs:
         with:
           name: qch-artifact
       - run: ls -R
+      - run: git status
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
