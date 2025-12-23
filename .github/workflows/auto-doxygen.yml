@@ -27,12 +27,13 @@ jobs:
           git lfs track "*.qch"  
     - name: Run doxygen
       run: doxygen Doxyfile
-    -  run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .gitattributes ${{ github.workspace }}/doc/QElectroTech.qch -f
-          git commit -m "Push updated QCH file"
-          git push
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v8
+      with:
+        commit-message: update QCH file
+        title: Update QCH Help file
+        body: Credit new contributors by updating AUTHORS
+        branch: update-qch
     - uses: actions/upload-pages-artifact@v3
       with: 
        path: ${{ github.workspace }}/doc/html/
