@@ -1,14 +1,11 @@
 name: Auto-build doxygen docs
 on:
   push:
-    branches:
-      - master
-      - doxygen-MR
+    branches: [master,doxygen-MR]
   pull_request:
-    branches:
-      - main     
+    branches: [master,doxygen-MR]
   
-  
+
   
 jobs:  
   doxygen:
