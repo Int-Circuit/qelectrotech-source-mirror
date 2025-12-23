@@ -33,6 +33,7 @@ jobs:
         title: Update QCH Help file
         body: Credit new contributors by updating AUTHORS
         branch: update-qch
+        base: doxygen-MR
     - uses: actions/upload-pages-artifact@v3
       with: 
        path: ${{ github.workspace }}/doc/html/
