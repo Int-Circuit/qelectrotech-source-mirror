@@ -28,6 +28,7 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v8
       with:
+        token: ${{ secrets.MR_TOKEN }}
         commit-message: update QCH file
         title: Update QCH Help file
         body: Credit new contributors by updating AUTHORS
