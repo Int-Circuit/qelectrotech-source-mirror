@@ -32,6 +32,9 @@ jobs:
         body: Credit new contributors by updating AUTHORS
         branch: update-qch
         base: doxygen-MR
+        labels: qch
+        delete-branch: true
+        add-paths: doc/*.qch
     - uses: actions/upload-pages-artifact@v3
       with: 
        path: ${{ github.workspace }}/doc/html/
