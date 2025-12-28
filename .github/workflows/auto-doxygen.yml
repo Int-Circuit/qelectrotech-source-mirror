@@ -1,15 +1,17 @@
 name: Auto-build doxygen docs
 on:
   push:
-    branches: [master,doxygen-MR]
+    branches:
+      - master
+   
   
-
   
 jobs:  
   doxygen:
     permissions:
        contents: write    
     runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/master'
     steps:
     - uses: actions/checkout@v4
       with:
