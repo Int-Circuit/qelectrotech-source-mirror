@@ -29,10 +29,12 @@ jobs:
         token: ${{ secrets.MR_TOKEN }}
         commit-message: update QCH file
         title: Update QCH Help file
-        body: Credit new contributors by updating AUTHORS
+        body: Updating QT Help file following commit ${{ github.sha }}
         branch: update-qch
         base: doxygen-MR
-        labels: qch
+        labels: | 
+          qch
+          cicd
         delete-branch: true
         add-paths: doc/*.qch
     - uses: actions/upload-pages-artifact@v3
