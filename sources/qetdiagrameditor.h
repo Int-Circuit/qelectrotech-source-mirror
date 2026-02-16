@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -54,6 +54,8 @@ class KAutoSaveFile;
 class QETDiagramEditor : public QETMainWindow
 {
 	Q_OBJECT
+
+        friend class TerminalStripEditorWindow;
 	
 	public:
 		QETDiagramEditor(

@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -1037,8 +1037,10 @@ bool TerminalStrip::fromXml(QDomElement &xml_element)
 				}
 			}
 
-			auto raw_ptr = new PhysicalTerminal(this, real_t_vector);
-			m_physical_terminals.append(raw_ptr->sharedRef());
+            if (!real_t_vector.isEmpty()) {
+                auto raw_ptr = new PhysicalTerminal(this, real_t_vector);
+                m_physical_terminals.append(raw_ptr->sharedRef());
+            }
 		}
 
 	}

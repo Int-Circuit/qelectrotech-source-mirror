@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -142,13 +142,12 @@ void QETMainWindow::initCommonActions()
 */
 void QETMainWindow::initCommonMenus()
 {
-	settings_menu_ = new QMenu(tr("&Configuration", "window menu"));
+	settings_menu_ = new QMenu(tr("&Configuration", "window menu"), this);
 	settings_menu_ -> addAction(fullscreen_action_);
 	settings_menu_ -> addAction(configure_action_);
 	connect(settings_menu_, SIGNAL(aboutToShow()), this, SLOT(checkToolbarsmenu()));
 
-
-	help_menu_ = new QMenu(tr("&Aide", "window menu"));
+	help_menu_ = new QMenu(tr("&Aide", "window menu"), this);
 	help_menu_ -> addAction(whatsthis_action_);
 	help_menu_ -> addSeparator();
 	help_menu_ -> addAction(manual_online_);

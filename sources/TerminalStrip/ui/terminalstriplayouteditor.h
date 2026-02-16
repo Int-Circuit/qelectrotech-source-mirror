@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -74,10 +74,9 @@ class TerminalStripLayoutEditor : public QWidget
 		void resizeEvent(QResizeEvent *event) override;
 		void showEvent(QShowEvent *event) override;
 
-	private slots:
-		void valueEdited();
-
-		void on_m_display_preview_help_clicked(bool checked);
+    private slots:
+        void valueEdited();
+        void on_m_display_preview_help_clicked(bool checked);
 
 	private:
 		void updateUi();

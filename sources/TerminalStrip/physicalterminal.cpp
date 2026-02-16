@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -187,6 +187,20 @@ int PhysicalTerminal::levelOf(const QSharedPointer<RealTerminal> &terminal) cons
  */
 QVector<QSharedPointer<RealTerminal>> PhysicalTerminal::realTerminals() const {
 	return m_real_terminal;
+}
+
+/**
+ * @brief PhysicalTerminal::realTerminal
+ * @param pos
+ * @return the real terminal at position pos.
+ * Note that the returned QSharedPointer can be null
+ */
+QSharedPointer<RealTerminal> PhysicalTerminal::realTerminal(int pos) const
+{
+	if (pos < m_real_terminal.size()) {
+		return m_real_terminal.at(pos);
+	}
+	else return QSharedPointer<RealTerminal>{};
 }
 
 /**

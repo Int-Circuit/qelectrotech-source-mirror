@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -164,6 +164,10 @@ void delete_old_log_files(int days)
 */
 int main(int argc, char **argv)
 {
+	// before creating Application:
+	// export environment-variable "QT_HASH_SEED" with value "0" to
+	// disable radomisation for hashes in order to obtain "clean" XML-diffs:
+	qputenv("QT_HASH_SEED", "0");
 	//Some setup, notably to use with QSetting.
 	QCoreApplication::setOrganizationName("QElectroTech");
 	QCoreApplication::setOrganizationDomain("qelectrotech.org");

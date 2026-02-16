@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -20,6 +20,8 @@
 
 #include <QSet>
 #include <QVector>
+
+#include "../qetgraphicsitem/terminalelement.h"
 
 class QGraphicsItem;
 class Conductor;
@@ -81,6 +83,7 @@ class DiagramContent
 		QList<QGraphicsItem *> m_selected_items;
 		QVector<QetGraphicsTableItem *> m_tables;
 		QVector<TerminalStripItem *> m_terminal_strip;
+		QVector<QPointer<TerminalElement>> m_terminal_elements;
 
 		
 		QList<DiagramTextItem *> selectedTexts() const;

@@ -163,6 +163,7 @@ http://creativecommons.org/licenses/by/3.0/ ή στείλτε μια επιστ�
 Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 [nl]
+
 De elementen collectie voorzien, samen met QElectroTech wordt geleverd als en
 zonder enige garantie van geschiktheid voor uw doel of werk.
 Het gebruik, de wijziging en de integratie van de elementen in elektrische
@@ -177,7 +178,8 @@ http://creativecommons.org/licenses/by/3.0/ of stuur een brief naar Creative
 Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 [be]
-De elementen collectie welke samen met QElectroTech wordt geleverd zonder enige garantie
+
+De elementen collectie welke samen met QElectroTech wordt geleverd zonder enige garantie 
 of deze geschikt zijn voor uw doel of de werking.
 Het gebruik, wijzigen en integratie van de elementen in uw elektrische
 schema's wordt toegestaan zonder enige voorwaarden, ongeacht wat de uiteindelijke
@@ -212,3 +214,20 @@ QElectroTech と一緒に提供される要素コレクションは現状のま�
 ライセンスのコピーを見るには http://creativecommons.org/licenses/by/3.0/ にアクセスするか、
 「Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.」に
 手紙を送ってください。
+
+[ko]
+QElectroTech와 함께 제공되는 요소 컬렉션은 “있는 그대로(as is)” 제공되며,
+특정 목적에 대한 적합성이나 정상 동작에 대한 어떠한 보증도 제공되지 않습니다.
+요소의 사용, 수정 및 전기 도면에의 통합은 도면의 최종 라이선스와 관계없이
+아무런 조건 없이 허용됩니다.
+
+본 소프트웨어 또는 관련 파일을 기계 학습(machine learning) 모델을 구축하기 위한
+샘플 데이터로 사용하는 것은 허용되지 않습니다.
+
+전기 도면과 분리된 형태로 QElectroTech 요소 컬렉션의 전부 또는 일부를,
+수정 여부와 관계없이 재배포하는 경우에는 CC-BY 라이선스 조건을 준수해야 합니다.
+본 저작물은 Creative Commons Attribution 3.0 라이선스에 따라 제공됩니다.
+라이선스 사본은 다음 주소에서 확인할 수 있습니다.
+http://creativecommons.org/licenses/by/3.0/
+또는 다음 주소로 서신을 보내실 수 있습니다.
+Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.

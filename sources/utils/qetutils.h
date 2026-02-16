@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -31,6 +31,7 @@ namespace QETUtils
 	QString marginsToString(const QMargins &margins);
 	QMargins marginsFromString(const QString &string);
 	qreal graphicsHandlerSize(QGraphicsItem *item);
+    void pixelSizedFont (QFont &font);
 
 	bool sortBeginIntString(const QString &str_a, const QString &str_b);
 

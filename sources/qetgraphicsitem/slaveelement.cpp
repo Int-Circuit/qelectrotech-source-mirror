@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -18,8 +18,6 @@
 #include "slaveelement.h"
 
 #include "../diagram.h"
-#include "../diagramposition.h"
-#include "../qetapp.h"
 #include "dynamicelementtextitem.h"
 
 /**
@@ -33,9 +31,7 @@ SlaveElement::SlaveElement(const ElementsLocation &location,
 			   QGraphicsItem *qgi,
 			   int *state) :
 	Element(location, qgi, state, Element::Slave)
-{
-	m_xref_item = nullptr;
-}
+{}
 
 /**
 	@brief SlaveElement::~SlaveElement

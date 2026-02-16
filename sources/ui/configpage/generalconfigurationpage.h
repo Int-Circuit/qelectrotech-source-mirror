@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -50,6 +50,8 @@ class GeneralConfigurationPage : public ConfigPage
 		void on_MaxPartsElementEditorList_sb_valueChanged(int value);
 		void on_DiagramEditor_Grid_PointSize_min_sb_valueChanged(int value);
 		void on_ElementEditor_Grid_PointSize_min_sb_valueChanged(int value);
+
+		void on_m_hdpi_round_cb_clicked(bool checked);
 
 	private:
 		void fillLang();

@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ namespace QetVersion
 
 	QVersionNumber currentVersion()
 	{
-		return QVersionNumber{ 0, 100, 0 };
+		return QVersionNumber{ 0, 100, 1 };
 	}
 
 	QString displayedVersion()

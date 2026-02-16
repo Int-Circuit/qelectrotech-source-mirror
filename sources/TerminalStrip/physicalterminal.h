@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -86,6 +86,7 @@ class PhysicalTerminal
 		int levelCount() const;
 		int levelOf(const QSharedPointer<RealTerminal> &terminal) const;
 		QVector<QSharedPointer<RealTerminal>> realTerminals() const;
+		QSharedPointer<RealTerminal> realTerminal(int pos) const;
 		QUuid uuid() const;
 		int pos() const;
 		int realTerminalCount() const;

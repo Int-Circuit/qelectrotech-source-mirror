@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -51,13 +51,14 @@ namespace TerminalStripDrawer
 			QSharedPointer<PhysicalTerminal> m_physical;
 	};
 
-	class TrueRealTerminal : public AbstractRealTerminalInterface
-	{
-		public:
-			TrueRealTerminal(QSharedPointer<RealTerminal> real);
-			QString label() const override;
-			bool isBridged() const override;
-			AbstractBridgeInterface* bridge() const override;
+    class TrueRealTerminal : public AbstractRealTerminalInterface
+    {
+        public:
+            TrueRealTerminal(QSharedPointer<RealTerminal> real);
+            QString label() const override;
+            bool isBridged() const override;
+            AbstractBridgeInterface* bridge() const override;
+			QString xref() const override;
 
 		private:
 			QSharedPointer<RealTerminal> m_real;

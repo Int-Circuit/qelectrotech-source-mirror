@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 #ifndef SLAVEELEMENT_H
 #define SLAVEELEMENT_H
 
-#include "../properties/xrefproperties.h"
 #include "element.h"
 
 class SlaveElement : public Element
@@ -33,9 +32,6 @@ class SlaveElement : public Element
 		void linkToElement(Element *elmt) override;
 		void unlinkAllElements() override;
 		void unlinkElement(Element *elmt) override;
-	
-	private:
-		QGraphicsTextItem *m_xref_item;
 };
 
 #endif // SLAVEELEMENT_H

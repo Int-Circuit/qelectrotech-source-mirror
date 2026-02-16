@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -338,7 +338,7 @@ void TitleBlockPropertiesWidget::initDialog(
 		this,
 		SLOT(duplicateCurrentTitleBlockTemplate()));
 
-	m_tbt_menu = new QMenu(tr("Title block templates actions"));
+	m_tbt_menu = new QMenu(tr("Title block templates actions"), ui->m_tbt_pb);
 	m_tbt_menu -> addAction(m_tbt_edit);
 	m_tbt_menu -> addAction(m_tbt_duplicate);
 	ui -> m_tbt_pb -> setMenu(m_tbt_menu);

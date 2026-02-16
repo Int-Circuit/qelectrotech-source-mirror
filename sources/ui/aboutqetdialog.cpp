@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -131,6 +131,7 @@ void AboutQETDialog::setTranslators()
 	addAuthor(ui->m_translators_label, "Yaroslav",                                  "",                               tr("Traduction en ukrainien"));
 	addAuthor(ui->m_translators_label, "JoelAs",                                    "",                               tr("Traduction en norvégien"));
 	addAuthor(ui->m_translators_label, "Yuki",                                      "yuki.atoh@gmail.com",            tr("Traduction en japonais"));
+	addAuthor(ui->m_translators_label, "Jung Kwang-Ho",                             "jkh2rokmc@daum.net",             tr("Traduction en coréen"));
 	addAuthor(ui->m_translators_label, "Nathalie",                                  "nathalie.roussier@giz.de",       tr("Traduction en mongol"));
 	addAuthor(ui->m_translators_label, "Uroš Platiše",                              "uros.platise@energycon.eu",      tr("Traduction en slovène"));
 }
@@ -178,7 +179,7 @@ void AboutQETDialog::setAnnexProject()
 	addLibrary(ui->m_annex_project_label, tr("Générateur d'élément lambda", "Lambda element generator"),
 	 "https://github.com/asnigma/qet_gen_element");
 	addLibrary(ui->m_annex_project_label, tr("Convertisseur d'élément DXF", "Dxf2elmt"),
-	 "https://github.com/antonioaja/dxf2elmt");
+	 "https://github.com/Vadoola/dxf2elmt");
 	addLibrary(ui->m_annex_project_label, tr("Outil de traduction d'éléments", "Qet_translate"),
 	 "https://qelectrotech.org/forum/viewtopic.php?pid=16027#p16027");
 

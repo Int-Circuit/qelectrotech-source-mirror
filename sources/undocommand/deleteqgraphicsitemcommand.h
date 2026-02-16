@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -34,10 +34,10 @@ class DeleteQGraphicsItemCommand : public QUndoCommand
 	public:
 		DeleteQGraphicsItemCommand(Diagram *diagram, const DiagramContent &content, QUndoCommand * parent = nullptr);
 		~DeleteQGraphicsItemCommand() override;
+		static bool hasNonDeletableTerminal(const DiagramContent &content);
 
 	private:
 		DeleteQGraphicsItemCommand(const DeleteQGraphicsItemCommand &);
-
 		void setPotentialsOfRemovedElements();
 		Terminal *terminalInSamePotential(Terminal *terminal, Conductor *conductor_to_exclude);
 

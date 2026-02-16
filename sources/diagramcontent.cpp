@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -59,7 +59,15 @@ DiagramContent::DiagramContent(Diagram *diagram, bool selected) :
 	{
 		switch (item->type())
 		{
-			case Element::Type:             { m_elements    << qgraphicsitem_cast<Element *>(item);             break;}
+			case Element::Type:
+			{
+				auto element = qgraphicsitem_cast<Element *>(item);
+				m_elements << element;
+				if (element->elementData().m_type == ElementData::Terminal) {
+					m_terminal_elements << static_cast<TerminalElement*>(element);
+				}
+				break;
+			}
 			case IndependentTextItem::Type: { m_text_fields << qgraphicsitem_cast<IndependentTextItem *>(item); break;}
 			case Conductor::Type:
 			{

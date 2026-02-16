@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -320,24 +320,7 @@ void CrossRefItem::paint(
 void CrossRefItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 	event->accept();
-	if (m_hovered_contact && m_hovered_contact->scene())
-	{
-			//Show and select the linked slave element
-		if (scene() != m_hovered_contact->scene())
-		{
-			m_hovered_contact->diagram()->showMe();
-		}
-		m_hovered_contact->setSelected(true);
-
-			//Zoom to the linked slave element
-		foreach(QGraphicsView *view,
-				m_hovered_contact->diagram()->views())
-		{
-			QRectF fit = m_hovered_contact->sceneBoundingRect();
-			fit.adjust(-200, -200, 200, 200);
-			view->fitInView(fit, Qt::KeepAspectRatioByExpanding);
-		}
-	}
+	QetGraphicsItem::showItem(m_hovered_contact);
 }
 
 /**

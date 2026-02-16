@@ -3,6 +3,8 @@
 # Qt build output
 *.user
 # doxygen Doxyfile output
-doc/
+doc/*
+!doc/QElectroTech.qch
 QElectroTech.tag
 *build/
+!doc/doc-utils

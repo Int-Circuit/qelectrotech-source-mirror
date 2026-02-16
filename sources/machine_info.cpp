@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -444,6 +444,22 @@ int32_t MachineInfo::i_max_screen_width() {
 */
 int32_t MachineInfo::i_max_screen_height() {
 	return pc.screen.Max_height;
+}
+
+/**
+	@brief MachineInfo::i_max_available_width
+	@return max available width
+*/
+int32_t MachineInfo::i_max_available_width() {
+	return QGuiApplication::primaryScreen()->availableSize().width();
+}
+
+/**
+	@brief MachineInfo::i_max_available_height
+	@return max available height
+*/
+int32_t MachineInfo::i_max_available_height() {
+	return QGuiApplication::primaryScreen()->availableSize().height();
 }
 
 /**

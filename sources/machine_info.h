@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -57,6 +57,8 @@ class MachineInfo
 
 		int32_t i_max_screen_width();
 		int32_t i_max_screen_height();
+		int32_t i_max_available_width();
+		int32_t i_max_available_height();
 		QString compilation_info();
 		void send_info_to_debug();
 

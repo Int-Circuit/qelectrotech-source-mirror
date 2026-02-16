@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 	
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -198,6 +198,7 @@ namespace QET {
 		QIcon hu;
 		QIcon it;
 		QIcon jp;
+		QIcon ko;
 		QIcon pl;
 		QIcon pt;
 		QIcon ro;
@@ -672,6 +673,7 @@ void QET::Icons::initIcons()
 	hu                  .addFile(":/ico/24x16/hu.png");
 	it                  .addFile(":/ico/24x16/it.png");
 	jp                  .addFile(":/ico/24x16/jp.png");
+	ko                  .addFile(":/ico/24x16/kr.png");
 	pl                  .addFile(":/ico/24x16/pl.png");
 	pt                  .addFile(":/ico/24x16/pt.png");
 	ro                  .addFile(":/ico/24x16/ro.png");

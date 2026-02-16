@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@
 #include <QtDebug>
 #include <utility>
 
-static int BACKUP_INTERVAL = 120000; //interval in ms of backup = 2min
+static int BACKUP_INTERVAL = 1200000; //interval in ms of backup = 20min
 
 /**
 	@brief QETProject::QETProject

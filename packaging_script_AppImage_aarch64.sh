@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-#Based on raspberry pi 5 8 Gb bookworm
+#Based on raspberry pi 5 8 Gb Trixie
 #sudo apt install git ssh rsync libqt5svg5-dev qt5-qmake qtbase5-dev libkf5widgetsaddons-dev libkf5coreaddons-dev libsqlite3-dev pkgconf libqt5waylandclient5-dev libqt5waylandcompositor5-dev g++ make
 #mkdir -p AppImage/0.100.0/aarch64
 # Get GIT sources
@@ -71,12 +71,12 @@ chmod +x AppDir/qelectrotech/AppRun
 # Get 64-bit ARM version of go-appimage appimagetool
 #wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-aarch64.AppImage" | head -n 1 | cut -d '"' -f 2)
 #chmod +x appimagetool-*.AppImage
-VERSION=$tagName-r$HEAD ./appimagetool-8*.AppImage ./AppDir/qelectrotech/
+VERSION=$tagName-r$HEAD ./appimagetool-9*.AppImage ./AppDir/qelectrotech/
 
 
 chmod -x QElectroTech-*.AppImage
 shasum -a 256 QElectroTech-$tagName-r$HEAD-aarch64.AppImage > QElectroTech-$tagName-r$HEAD-aarch64.AppImage-SHA256.txt
-mv QElectroTech-$tagName-r$HEAD-aarch64.AppImage* ./AppImage/0.100.0/aarch64
+mv QElectroTech-$tagName-r$HEAD-aarch64.AppImage* ./AppImage/0.100.0/aarch64/trixie
 cd ..
   #rsync to server
   echo -e "\033[1;31mWould you like to RSYNC Appimage to server n/Y?.\033[m"

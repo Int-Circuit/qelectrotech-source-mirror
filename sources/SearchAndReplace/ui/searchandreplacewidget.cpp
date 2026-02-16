@@ -1,5 +1,5 @@
 ﻿/*
-	Copyright 2006-2025 The QElectroTech Team
+	Copyright 2006-2026 The QElectroTech Team
 	This file is part of QElectroTech.
 
 	QElectroTech is free software: you can redistribute it and/or modify
@@ -961,21 +961,21 @@ void SearchAndReplaceWidget::on_m_tree_widget_itemDoubleClicked(
 	else if (m_element_hash.keys().contains(item))
 	{
 		QPointer<Element> elmt = m_element_hash.value(item);
-		if (elmt) {
+		if (elmt && elmt->diagram()) {
 			elmt.data()->diagram()->showMe();
 		}
 	}
 	else if (m_text_hash.keys().contains(item))
 	{
 		QPointer<IndependentTextItem> text = m_text_hash.value(item);
-		if (text) {
+		if (text && text->diagram()) {
 			text.data()->diagram()->showMe();
 		}
 	}
 	else if (m_conductor_hash.keys().contains(item))
 	{
 		QPointer<Conductor> cond = m_conductor_hash.value(item);
-		if (cond) {
+		if (cond && cond->diagram()) {
 			cond.data()->diagram()->showMe();
 		}
 	}
